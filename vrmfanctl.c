@@ -19,5 +19,12 @@ int main(void) {
     //Turn off the fan.
     PORTB |= _BV(PWM_N);
 
+    //Disable unused modules to reduce power consumption
+    //Analog comparator
+    ACSR |= _BV(ACD);
+    //ADC
+    PRR = _BV(PRADC);
+
+    //Stop CPU core until an interrupt occurs.
     for (;;) sleep_mode();
 }
