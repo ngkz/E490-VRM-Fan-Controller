@@ -7,8 +7,19 @@
 #define FG    PB3
 
 FUSES = {
+    // CKDIV8 = 0          -> Clock divided by 8 (1MHz system clock when CKSEL = 0010)
+    // CKOUT = 1           -> Clock output disabled
+    // SUT[1:0] = 10       -> Start-up time is 14 clock + 64ms (when CKSEL = 0010)
+    // CKSEL[3:0] = 0010   -> Internal RC Oscillator provides 8MHz clock
     .low = LFUSE_DEFAULT,
+    // RSTDISBL = 1        -> External reset pin enabled (needed for low voltage serial programming)
+    // DWRN = 1            -> DebugWIRE disabled
+    // SPIEN = 0           -> Serial programming enabled
+    // WDTON = 1           -> Watchdog timer enabled on boot
+    // EESAVE = 1          -> Chip erase erases EEPROM
+    // BODLEVEL[2:0] = 111 -> Brown-out Detector disabled
     .high = HFUSE_DEFAULT,
+    // SELFPRGEN = 1       -> Self-programming enabled
     .extended = EFUSE_DEFAULT
 };
 
