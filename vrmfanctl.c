@@ -15,7 +15,8 @@ int main(void) {
     //Define directions for port pins
     DDRB = _BV(PWM_N);
     //Pull-up unconnected PB1 pin to avoid high power consumption.
-    PORTB |= _BV(PB1);
+    //Pull-up FG
+    PORTB |= _BV(PB1) | _BV(FG);
     //Turn off the fan.
     PORTB |= _BV(PWM_N);
 
