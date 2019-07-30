@@ -47,7 +47,7 @@ void set_fan_duty(uint8_t duty) {
     } else {
         //Cut clock to Timer 1
         PRR |= _BV(PRTIM1);
-        //COM1B[1:0] = 00 -> Disonnect OC1B(PWM#)
+        //Disonnect OC1B(PWM#)
         GTCCR &= ~_BV(COM1B1) & ~_BV(COM1B0);
         //Turn off the fan.
         PORTB |= _BV(PWM_N);
