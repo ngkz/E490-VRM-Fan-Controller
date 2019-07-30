@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <avr/interrupt.h>
 #include <avr/io.h>
 #include <avr/sleep.h>
 #include <util/delay.h>
@@ -22,6 +23,12 @@ FUSES = {
     // SELFPRGEN = 1       -> Self-programming enabled
     .extended = EFUSE_DEFAULT
 };
+
+volatile unsigned long cnt_256us;
+
+ISR(TIM0_OVF_vect) {
+    cnt_256us++;
+}
 
 //duty: 0-159
 void set_fan_duty(uint8_t duty) {
@@ -63,6 +70,12 @@ int main(void) {
     //Cut clock to Timer1 and ADC
     PRR = _BV(PRTIM1) | _BV(PRADC);
 
+    //Timer0 configuration
+    //Enable overflow interrupt
+    TIMSK = _BV(TOIE0);
+    //Start the timer, no prescaling (1MHz clock)
+    TCCR0B = _BV(CS00);
+
     //Timer1 configuration
     //Enable the PLL
     //LSM = 0  -> High speed mode (64MHz)
@@ -88,6 +101,9 @@ int main(void) {
     GTCCR = _BV(PWM1B);
     //PWM freqency 4MHz / (159 + 1) = 25kHz
     OCR1C = 159;
+
+    //Enable interrupt
+    sei();
 
     set_fan_duty(79);
 
