@@ -24,10 +24,29 @@ FUSES = {
     .extended = EFUSE_DEFAULT
 };
 
-volatile unsigned long cnt_256us;
+volatile unsigned long counter256us;
+volatile unsigned long lastLevelChangeTime;
+volatile unsigned long levelChangeInterval;
 
 ISR(TIM0_OVF_vect) {
-    cnt_256us++;
+    counter256us++;
+}
+
+unsigned long micros(void) {
+    uint8_t oldSREG = SREG;
+    cli();
+    unsigned long ovf = counter256us;
+    uint8_t cnt = TCNT0;
+    if ((TIFR & _BV(TOV0)) && cnt < 255) ovf++;
+    SREG = oldSREG;
+    return ovf << 8 | cnt;
+}
+
+ISR(PCINT0_vect) {
+    unsigned long currentTime = micros();
+    // 3/4*levelChangeInterval + 1/4*(currentTime - lastLevelChangeTime)
+    levelChangeInterval = levelChangeInterval - (levelChangeInterval >> 2) + ((currentTime - lastLevelChangeTime) >> 2);
+    lastLevelChangeTime = currentTime;
 }
 
 //duty: 0-159
@@ -101,6 +120,12 @@ int main(void) {
     GTCCR = _BV(PWM1B);
     //PWM freqency 4MHz / (159 + 1) = 25kHz
     OCR1C = 159;
+
+    //Pin change interrupt configuration
+    //Generate pin change interrupt if PCINT3(FG) is changed
+    PCMSK |= _BV(PCINT3);
+    //Enable pin change interrupt
+    GIMSK |= _BV(PCIE);
 
     //Enable interrupt
     sei();
