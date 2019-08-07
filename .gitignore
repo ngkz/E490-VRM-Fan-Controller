@@ -1,5 +1,1 @@
-vrmfanctl
-vrmfanctl.lss
-vrmfanctl.map
-*.d
-*.o
+.pio
