@@ -15,7 +15,8 @@ ISR(TIM0_OVF_vect) {
     counter256us++;
 }
 
-unsigned long micros(void) {
+// the number of microseconds since the MCU began running the program.
+unsigned long usec(void) {
     uint8_t oldSREG = SREG;
     cli();
     unsigned long ovf = counter256us;
@@ -26,7 +27,7 @@ unsigned long micros(void) {
 }
 
 ISR(PCINT0_vect) {
-    unsigned long currentTime = micros();
+    unsigned long currentTime = usec();
     // 3/4*levelChangeInterval + 1/4*(currentTime - lastLevelChangeTime)
     levelChangeInterval = levelChangeInterval - (levelChangeInterval >> 2) + ((currentTime - lastLevelChangeTime) >> 2);
     lastLevelChangeTime = currentTime;
