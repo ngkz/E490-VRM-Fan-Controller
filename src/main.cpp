@@ -3,13 +3,23 @@
 #include <avr/io.h>
 #include <avr/sleep.h>
 #include <util/delay.h>
+#include <stddef.h>
+#include <USIWire.h>
 
-#define PWM_N PB4
-#define FG    PB3
+#define PWM_N            PB4
+#define FG               PB3
+#define SMBUS_SLAVE_ADDR 0x12
+
+enum {
+    REG_DUTY,
+    REG_RPM
+};
 
 volatile unsigned long counter256us;
 volatile unsigned long lastLevelChangeTime;
 volatile unsigned long levelChangeInterval;
+// current register address for read/write
+volatile uint8_t addr = 0;
 
 ISR(TIM0_OVF_vect) {
     counter256us++;
@@ -34,7 +44,7 @@ ISR(PCINT0_vect) {
 }
 
 //duty: 0-159
-void set_fan_duty(uint8_t duty) {
+void setFanDuty(uint8_t duty) {
     if (duty > 0) {
         //Reset Timer 1 counter
         TCNT1 = 0;
@@ -54,6 +64,32 @@ void set_fan_duty(uint8_t duty) {
         GTCCR &= ~_BV(COM1B1) & ~_BV(COM1B0);
         //Turn off the fan.
         PORTB |= _BV(PWM_N);
+    }
+}
+
+// function that executes whenever data is received from master
+void receiveEvent(int howMany) {
+    if (howMany <= 0) return;
+
+    //read register address
+    addr = Wire.read();
+    howMany--;
+
+    if (howMany >= 1 && addr == REG_DUTY) {
+        // duty write request
+        setFanDuty(Wire.read());
+    }
+
+    // clear rx buffer
+    while (Wire.available()) Wire.read();
+}
+
+// function that executes whenever data is requested by master
+void requestEvent() {
+    if (addr == REG_RPM) {
+        uint16_t rpm = 60 * 1000000 / 4 / levelChangeInterval;
+        Wire.write(rpm);
+        Wire.write(rpm >> 8);
     }
 }
 
@@ -96,7 +132,7 @@ int main(void) {
     //CS1[3:0] = 0101       -> Timer1 clock is 64MHz from PLL/16 = 4MHz
     TCCR1 = _BV(CS12) | _BV(CS10);
     //PWM1B = 1             -> Enable pulse width modulator B
-    //COM1B[1:0] = 00       -> OC1B(PWM#) and #OC1B are not connected. set_fan_duty() connects them when neeeded.
+    //COM1B[1:0] = 00       -> OC1B(PWM#) and #OC1B are not connected. setFanDuty() connects them when neeeded.
     //FOC1B = 0
     //FOC1A = 0
     //PSR1 = 0
@@ -114,7 +150,9 @@ int main(void) {
     //Enable interrupt
     sei();
 
-    set_fan_duty(79);
+    Wire.begin(SMBUS_SLAVE_ADDR);
+    Wire.onRequest(requestEvent);
+    Wire.onReceive(receiveEvent);
 
     //Stop CPU core until an interrupt occurs.
     for (;;) sleep_mode();
