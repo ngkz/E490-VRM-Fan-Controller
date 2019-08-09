@@ -27,10 +27,6 @@ ISR(PCINT0_vect) {
     lastLevelChangeTime = currentTime;
 }
 
-uint8_t getFanDuty() {
-    return GTCCR & (_BV(COM1B1) | _BV(COM1B0)) /* PWM B running */ ? OCR1B : 0;
-}
-
 // duty: 0-159
 void setFanDuty(uint8_t duty) {
     if (duty > 0) {
@@ -74,10 +70,6 @@ void receiveEvent(int howMany) {
 // function that executes whenever data is requested by master
 void requestEvent() {
     switch (addr) {
-    case REG_DUTY:
-        // duty read request
-        Wire.write(getFanDuty());
-        break;
     case REG_RPM:
         // rpm read request
         uint16_t rpm = 60 * 1000000 / 4 / levelChangeInterval;
