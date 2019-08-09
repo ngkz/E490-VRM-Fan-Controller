@@ -45,7 +45,7 @@ ISR(PCINT0_vect) {
 }
 
 void setFanDuty(uint8_t duty) {
-    if (duty > 0) {
+    if (duty > 0 || duty < 255) {
         power_timer1_enable();
         // reset the counter
         TCNT1 = 0;
@@ -59,8 +59,8 @@ void setFanDuty(uint8_t duty) {
         // disconnect PWM A from PWM# pin, stop timer 1
         TCCR1 &= ~(_BV(COM1A1) | _BV(COM1A0) | _BV(CS13) | _BV(CS12) | _BV(CS11) | _BV(CS10));
         power_timer1_disable();
-        // turn off the fan. PWM# is negative logic
-        digitalWrite(P_PWM_N, HIGH);
+        //PWM# is negative logic
+        digitalWrite(P_PWM_N, duty == 0 ? HIGH: LOW);
     }
 }
 
