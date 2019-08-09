@@ -27,14 +27,13 @@ ISR(PCINT0_vect) {
     lastLevelChangeTime = currentTime;
 }
 
-// duty: 0-159
 void setFanDuty(uint8_t duty) {
     if (duty > 0) {
         power_timer1_enable();
         // reset the counter
         TCNT1 = 0;
         // set the duty
-        OCR1B = duty;
+        OCR1B = (duty * OCR1C + 127) / 255;
         // connect PWM B to OC1B(PWM#), active low, reset timer 1 prescaler
         GTCCR |= _BV(COM1B1) | _BV(COM1B0) | _BV(PSR1);
         // start timer 1, 64MHz / 16 = 4MHz clock
