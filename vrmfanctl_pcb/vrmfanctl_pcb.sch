@@ -145,7 +145,6 @@ Wire Wire Line
 Connection ~ 1400 2300
 Wire Wire Line
 	1400 2300 1400 2600
-NoConn ~ 3700 1750
 Wire Wire Line
 	3100 1300 3100 1350
 Text Label 3750 1950 0    50   ~ 0
@@ -267,8 +266,6 @@ Wire Wire Line
 Wire Wire Line
 	1400 1200 1400 1800
 Connection ~ 1400 1800
-Text Label 3750 2050 0    50   ~ 0
-PWM#
 $Comp
 L Device:Q_NPN_ECB Q1
 U 1 1 5D3A6F9D
@@ -326,18 +323,12 @@ V+(RED)
 Text Notes 5050 1900 0    50   ~ 0
 To Fan (KDB0305HA3-CD7)
 Wire Wire Line
-	3700 2050 3900 2050
-Wire Wire Line
-	3900 2050 3900 2400
-Wire Wire Line
 	1400 2600 1500 2600
 Wire Wire Line
 	1500 2650 1500 2600
 Connection ~ 1500 2600
 Wire Wire Line
 	1500 2600 1600 2600
-Wire Wire Line
-	3700 1950 4750 1950
 Text Label 4400 2050 0    50   ~ 0
 PWM_5V
 Wire Wire Line
@@ -394,4 +385,13 @@ Wire Wire Line
 Wire Wire Line
 	4750 2400 4750 2250
 Connection ~ 4500 2400
+Text Label 3750 1750 0    50   ~ 0
+PWM#
+Wire Wire Line
+	3700 1950 4750 1950
+Wire Wire Line
+	3700 1750 3900 1750
+Wire Wire Line
+	3900 1750 3900 2400
+NoConn ~ 3700 2050
 $EndSCHEMATC

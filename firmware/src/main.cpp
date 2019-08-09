@@ -22,9 +22,9 @@
 #include <avr/sleep.h>
 #include <avr/power.h>
 
-#define P_PWM_N          4 //PWM#
+#define P_PWM_N          1 //PWM#
 #define P_FG             3
-#define P_UNUSED         1
+#define P_UNUSED         4
 #define SMBUS_SLAVE_ADDR 0x12
 
 enum {
@@ -51,15 +51,13 @@ void setFanDuty(uint8_t duty) {
         TCNT1 = 0;
         // set the duty
         OCR1B = (duty * OCR1C + 127) / 255;
-        // connect PWM B to OC1B(PWM#), negative logic PWM, reset timer 1 prescaler
-        GTCCR |= _BV(COM1B1) | _BV(COM1B0) | _BV(PSR1);
-        // start timer 1, 64MHz / 16 = 4MHz clock
-        TCCR1 |= _BV(CS12) | _BV(CS10);
+        // reset timer 1 prescaler
+        GTCCR |= _BV(PSR1);
+        // connect PWM A to OC1A(PWM#), negative logic PWM, start timer 1, 64MHz / 16 = 4MHz clock
+        TCCR1 |= _BV(COM1A1) | _BV(COM1A0) | _BV(CS12) | _BV(CS10);
     } else {
-        // disconnect PWM B from PWM# pin
-        GTCCR &= ~_BV(COM1B1) & ~_BV(COM1B0);
-        // stop timer 1
-        TCCR1 &= ~_BV(CS13) & ~_BV(CS12) & ~_BV(CS11) & ~_BV(CS10);
+        // disconnect PWM A from PWM# pin, stop timer 1
+        TCCR1 &= ~(_BV(COM1A1) | _BV(COM1A0) | _BV(CS13) | _BV(CS12) | _BV(CS11) | _BV(CS10));
         power_timer1_disable();
         // turn off the fan. PWM# is negative logic
         digitalWrite(P_PWM_N, HIGH);
@@ -111,10 +109,10 @@ void setup() {
     power_adc_disable();
 
     // timer 1 configuration
-    // no clear on compare match, turn off PWM A, disconnect timer comparator A from the output pin, stop the clock
-    TCCR1 = 0;
-    // turn on PWM B, disconnect PWM B from the output pin, no force output compare match, no timer 1 prescaler reset
-    GTCCR = (GTCCR | _BV(PWM1B)) & ~(_BV(COM1B1) | _BV(COM1B0) | _BV(FOC1B) | _BV(FOC1A) | _BV(PSR1));
+    // no clear on compare match, turn on PWM A, disconnect timer comparator A from the output pin, stop the clock
+    TCCR1 = _BV(PWM1A);
+    // turn off PWM B, disconnect PWM B from the output pin, no force output compare match, no timer 1 prescaler reset
+    GTCCR &= ~(_BV(COM1B1) | _BV(COM1B0) | _BV(FOC1B) | _BV(FOC1A) | _BV(PSR1));
     // reset the counter
     TCNT1 = 0;
     // reset output compare registers
