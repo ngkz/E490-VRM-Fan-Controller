@@ -1,1 +1,28 @@
-.pio
+# PlatformIO
+/firmware/.pio
+
+# For PCBs designed using KiCad: http://www.kicad-pcb.org/
+# Format documentation: http://kicad-pcb.org/help/file-formats/
+
+# Temporary files
+/vrmfanctl_pcb/*.000
+/vrmfanctl_pcb/*.bak
+/vrmfanctl_pcb/*.bck
+/vrmfanctl_pcb/*.kicad_pcb-bak
+/vrmfanctl_pcb/*~
+/vrmfanctl_pcb/_autosave-*
+/vrmfanctl_pcb/*.tmp
+/vrmfanctl_pcb/*-save.pro
+/vrmfanctl_pcb/*-save.kicad_pcb
+/vrmfanctl_pcb/fp-info-cache
+
+# Netlist files (exported from Eeschema)
+/vrmfanctl_pcb/*.net
+
+# Autorouter files (exported from Pcbnew)
+/vrmfanctl_pcb/*.dsn
+/vrmfanctl_pcb/*.ses
+
+# Exported BOM files
+/vrmfanctl_pcb/*.xml
+/vrmfanctl_pcb/*.csv
