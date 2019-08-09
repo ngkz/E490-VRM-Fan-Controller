@@ -15,7 +15,7 @@ enum {
     REG_RPM
 };
 
-volatile unsigned long lastLevelChangeTime;
+unsigned long lastLevelChangeTime;
 volatile unsigned long levelChangeInterval;
 // current register address for read/write
 volatile uint8_t addr = 0;
