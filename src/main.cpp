@@ -34,7 +34,7 @@ void setFanDuty(uint8_t duty) {
         TCNT1 = 0;
         // set the duty
         OCR1B = (duty * OCR1C + 127) / 255;
-        // connect PWM B to OC1B(PWM#), active low, reset timer 1 prescaler
+        // connect PWM B to OC1B(PWM#), negative logic PWM, reset timer 1 prescaler
         GTCCR |= _BV(COM1B1) | _BV(COM1B0) | _BV(PSR1);
         // start timer 1, 64MHz / 16 = 4MHz clock
         TCCR1 |= _BV(CS12) | _BV(CS10);
@@ -44,7 +44,7 @@ void setFanDuty(uint8_t duty) {
         // stop timer 1
         TCCR1 &= ~_BV(CS13) & ~_BV(CS12) & ~_BV(CS11) & ~_BV(CS10);
         power_timer1_disable();
-
+        // turn off the fan. PWM# is negative logic
         digitalWrite(P_PWM_N, HIGH);
     }
 }
@@ -81,9 +81,9 @@ void requestEvent() {
 void setup() {
     // FG connected to open-drain output
     pinMode(P_FG, INPUT_PULLUP);
-    // pull-up unconnected pins to avoid high power consumption
+    // pull-up a floating pin to avoid high power consumption
     pinMode(P_UNUSED, INPUT_PULLUP);
-    // PWM# is active low
+    // PWM# is negative logic output
     pinMode(P_PWM_N, OUTPUT);
     digitalWrite(P_PWM_N, HIGH);
 
@@ -100,14 +100,14 @@ void setup() {
     GTCCR = (GTCCR | _BV(PWM1B)) & ~(_BV(COM1B1) | _BV(COM1B0) | _BV(FOC1B) | _BV(FOC1A) | _BV(PSR1));
     // reset the counter
     TCNT1 = 0;
-    // reset the output compare registers
+    // reset output compare registers
     OCR1A = 0;
     OCR1B = 0;
-    // PWM freqency 4MHz / (159 + 1) = 25kHz, setFanDuty() configures the prescaler.
+    // PWM freqency 4MHz(Timer 1 clock) / (159 + 1) = 25kHz, setFanDuty() configures the clock.
     OCR1C = 159;
-    // Disable all Timer1 interrupts
+    // disable all Timer1 interrupts
     TIMSK &= ~(_BV(OCIE1A) | _BV(OCIE1B) | _BV(TOIE1));
-    // Clear the Timer1 interrupt flags
+    // clear the Timer1 interrupt flags
     TIFR |= _BV(OCF1A) | _BV(OCF1B) | _BV(TOV1);
 
     power_timer1_disable();
