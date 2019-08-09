@@ -32,8 +32,8 @@ enum {
     REG_RPM
 };
 
-unsigned long lastLevelChangeTime;
-volatile unsigned long levelChangeInterval;
+volatile unsigned long lastLevelChangeTime = 0;
+volatile unsigned long levelChangeInterval = 0;
 // current register address for read/write
 volatile uint8_t addr = 0;
 
@@ -83,13 +83,17 @@ void receiveEvent(int howMany) {
 
 // function that executes whenever data is requested by master
 void requestEvent() {
-    switch (addr) {
-    case REG_RPM:
+    if (addr == REG_RPM) {
         // rpm read request
-        uint16_t rpm = 60 * 1000000 / 4 / levelChangeInterval;
+        uint16_t rpm;
+        if (micros() - lastLevelChangeTime < 1000000) {
+            // >=15 RPM
+            rpm = 60 * 1000000 / 4 / levelChangeInterval;
+        } else {
+            rpm = 0;
+        }
         Wire.write(rpm);
         Wire.write(rpm >> 8);
-        break;
     }
 }
 
