@@ -22,7 +22,7 @@
 #include <avr/sleep.h>
 #include <avr/power.h>
 
-#define P_PWM_N          1 //PWM#
+#define P_PWM            1
 #define P_FG             3
 #define P_UNUSED         4
 #define SMBUS_SLAVE_ADDR 0x12
@@ -65,14 +65,14 @@ void setFanDuty(uint8_t duty) {
         OCR1A = scaledDuty;
         // reset timer 1 prescaler
         GTCCR |= _BV(PSR1);
-        // connect PWM A to OC1A(PWM#), negative logic PWM, start timer 1, 64MHz / 16 = 4MHz clock
-        TCCR1 |= _BV(COM1A1) | _BV(COM1A0) | _BV(CS12) | _BV(CS10);
+        // connect PWM A to OC1A(PWM), start timer 1, 64MHz / 16 = 4MHz clock
+        TCCR1 |= _BV(COM1A1) | _BV(CS12) | _BV(CS10);
     } else {
-        // disconnect PWM A from PWM# pin, stop timer 1
+        // disconnect PWM A from PWM pin, stop timer 1
         TCCR1 &= ~(_BV(COM1A1) | _BV(COM1A0) | _BV(CS13) | _BV(CS12) | _BV(CS11) | _BV(CS10));
         power_timer1_disable();
-        //PWM# is negative logic
-        digitalWrite(P_PWM_N, scaledDuty == 0 ? HIGH: LOW);
+
+        digitalWrite(P_PWM, scaledDuty == 0 ? LOW : HIGH);
     }
 }
 
@@ -145,9 +145,8 @@ void setup() {
     pinMode(P_FG, INPUT_PULLUP);
     // pull-up a floating pin to avoid high power consumption
     pinMode(P_UNUSED, INPUT_PULLUP);
-    // PWM# is negative logic output
-    pinMode(P_PWM_N, OUTPUT);
-    digitalWrite(P_PWM_N, HIGH);
+
+    pinMode(P_PWM, OUTPUT);
 
     // disable unneeded modules to reduce power consumption
     // ADC and analog comparator
