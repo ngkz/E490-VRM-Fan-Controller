@@ -1,5 +1,5 @@
 /*
- *  ThinkPad E490 VRM Fan Controller Firmware
+ *  ThinkPad E490 VRM Fan Controller Mod Firmware
  *  Copyright (C) 2019  Kazutoshi Noguchi
  *
  *  This program is free software: you can redistribute it and/or modify
