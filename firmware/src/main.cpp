@@ -56,12 +56,13 @@ ISR(PCINT0_vect) {
 }
 
 void setFanDuty(uint8_t duty) {
-    if (duty > 0 || duty < 255) {
+    uint8_t scaledDuty = (duty * OCR1C + 127) / 255;
+    if (scaledDuty > 0 && scaledDuty < OCR1C) {
         power_timer1_enable();
         // reset the counter
         TCNT1 = 0;
         // set the duty
-        OCR1B = (duty * OCR1C + 127) / 255;
+        OCR1A = scaledDuty;
         // reset timer 1 prescaler
         GTCCR |= _BV(PSR1);
         // connect PWM A to OC1A(PWM#), negative logic PWM, start timer 1, 64MHz / 16 = 4MHz clock
@@ -71,7 +72,7 @@ void setFanDuty(uint8_t duty) {
         TCCR1 &= ~(_BV(COM1A1) | _BV(COM1A0) | _BV(CS13) | _BV(CS12) | _BV(CS11) | _BV(CS10));
         power_timer1_disable();
         //PWM# is negative logic
-        digitalWrite(P_PWM_N, duty == 0 ? HIGH: LOW);
+        digitalWrite(P_PWM_N, scaledDuty == 0 ? HIGH: LOW);
     }
 }
 
