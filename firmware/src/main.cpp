@@ -27,15 +27,26 @@
 #define P_UNUSED         4
 #define SMBUS_SLAVE_ADDR 0x12
 
+//#define SMBDEBUG
+
 enum {
     REG_DUTY,
-    REG_RPM
+    REG_RPM,
+#ifdef SMBDEBUG
+    REG_DEBUG_ADDR,
+    REG_DEBUG_RW,
+#endif
 };
 
 volatile unsigned long lastLevelChangeTime = 0;
 volatile unsigned long levelChangeInterval = 0;
 // current register address for read/write
 volatile uint8_t addr = 0;
+
+#ifdef SMBDEBUG
+volatile uint16_t debugRWAddress;
+volatile uint8_t debugRWAmount;
+#endif
 
 ISR(PCINT0_vect) {
     unsigned long currentTime = micros();
@@ -77,6 +88,23 @@ void receiveEvent(int howMany) {
         setFanDuty(Wire.read());
     }
 
+#ifdef SMBDEBUG
+    else if (addr == REG_DEBUG_ADDR && howMany >= 2) {
+        // RW pointer write request
+        debugRWAddress = Wire.read() | Wire.read() << 8;
+    } else if (addr == REG_DEBUG_RW && howMany >= 1) {
+        // arbitrary read/write request
+        debugRWAmount = Wire.read();
+        howMany--;
+        while (howMany > 0 && debugRWAmount > 0) {
+            *((volatile uint8_t *)debugRWAddress) = Wire.read();
+            howMany--;
+            debugRWAddress++;
+            debugRWAmount--;
+        }
+    }
+#endif
+
     // clear rx buffer
     while (Wire.available()) Wire.read();
 }
@@ -95,6 +123,20 @@ void requestEvent() {
         Wire.write(rpm);
         Wire.write(rpm >> 8);
     }
+#ifdef SMBDEBUG
+    else if (addr == REG_DEBUG_ADDR) {
+        // pointer read request
+        Wire.write(debugRWAddress);
+        Wire.write(debugRWAddress >> 8);
+    } else if (addr == REG_DEBUG_RW) {
+        // arbitrary read request
+        while (debugRWAmount > 0) {
+            Wire.write(*((volatile uint8_t *)debugRWAddress));
+            debugRWAddress++;
+            debugRWAmount--;
+        }
+    }
+#endif
 }
 
 void setup() {
