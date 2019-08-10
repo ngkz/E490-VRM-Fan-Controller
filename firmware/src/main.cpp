@@ -108,7 +108,8 @@ void setup() {
 
     // disable unneeded modules to reduce power consumption
     // ADC and analog comparator
-    ACSR &= ~_BV(ACD);
+    ACSR &= ~_BV(ACIE);
+    ACSR |= _BV(ACD);
     ADCSRA &= ~_BV(ADEN);
     power_adc_disable();
 
