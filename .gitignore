@@ -15,6 +15,7 @@
 /vrmfanctl_pcb/*-save.pro
 /vrmfanctl_pcb/*-save.kicad_pcb
 /vrmfanctl_pcb/fp-info-cache
+/vrmfanctl_pcb/*.sch-bak
 
 # Netlist files (exported from Eeschema)
 /vrmfanctl_pcb/*.net
