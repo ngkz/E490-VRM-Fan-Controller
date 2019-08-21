@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:vrmfanctl_pcb-cache
-EELAYER 30 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -275,17 +275,6 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/atmel-2586-avr-8-bit-microc
 	1    0    0    -1  
 $EndComp
 $Comp
-L Connector:Conn_01x03_Male J2
-U 1 1 5D5FAC0C
-P 5900 1450
-F 0 "J2" H 5800 1400 50  0000 C CNN
-F 1 "Pin header L-shape" H 5450 1500 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Horizontal" H 5900 1450 50  0001 C CNN
-F 3 "~" H 5900 1450 50  0001 C CNN
-	1    5900 1450
-	-1   0    0    1   
-$EndComp
-$Comp
 L power:GND #PWR06
 U 1 1 5D600CEB
 P 5600 1600
@@ -321,7 +310,7 @@ Wire Wire Line
 Text Notes 5950 2800 0    50   ~ 0
 To temperature sensor diode
 Text Label 5150 2100 0    50   ~ 0
-TEMP
+D+
 Wire Wire Line
 	5400 2850 5700 2850
 Wire Wire Line
@@ -360,4 +349,15 @@ Wire Wire Line
 	5400 2100 5100 2100
 Wire Wire Line
 	5400 2100 5400 2850
+$Comp
+L Connector_Generic:Conn_01x03 J2
+U 1 1 5D5D4A8F
+P 5900 1450
+F 0 "J2" H 5980 1492 50  0000 L CNN
+F 1 "Hole" H 5980 1401 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 5900 1450 50  0001 C CNN
+F 3 "~" H 5900 1450 50  0001 C CNN
+	1    5900 1450
+	1    0    0    -1  
+$EndComp
 $EndSCHEMATC
