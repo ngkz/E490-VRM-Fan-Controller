@@ -131,8 +131,6 @@ Wire Wire Line
 	2100 3350 2100 3300
 Wire Wire Line
 	1650 3350 1650 3300
-Text Label 5150 2000 0    50   ~ 0
-FG
 NoConn ~ 5100 2300
 $Comp
 L power:GND #PWR0101
@@ -250,8 +248,6 @@ F 3 "" H 5700 2350 50  0001 C CNN
 	1    5700 2350
 	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	5100 2000 5750 2000
 $Comp
 L Connector:Conn_01x04_Female J4
 U 1 1 5D5F6860
@@ -360,4 +356,6 @@ F 3 "~" H 5900 1450 50  0001 C CNN
 	1    5900 1450
 	1    0    0    -1  
 $EndComp
+NoConn ~ 5100 2000
+NoConn ~ 5750 2000
 $EndSCHEMATC
