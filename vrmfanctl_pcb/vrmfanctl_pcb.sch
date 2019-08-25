@@ -131,7 +131,6 @@ Wire Wire Line
 	2100 3350 2100 3300
 Wire Wire Line
 	1650 3350 1650 3300
-NoConn ~ 5100 2300
 $Comp
 L power:GND #PWR0101
 U 1 1 5D3CB935
@@ -143,28 +142,26 @@ F 3 "" H 3800 2950 50  0001 C CNN
 	1    3800 2950
 	1    0    0    -1  
 $EndComp
-Text Notes 6000 1950 0    50   ~ 0
+Text Notes 6100 1950 0    50   ~ 0
 PWM(BLUE)
-Text Notes 6000 2050 0    50   ~ 0
+Text Notes 6100 2050 0    50   ~ 0
 FOO(YELLOW)
-Text Notes 6000 2150 0    50   ~ 0
+Text Notes 6100 2150 0    50   ~ 0
 V-(BLACK)
-Text Notes 6000 2250 0    50   ~ 0
+Text Notes 6100 2250 0    50   ~ 0
 V+(RED)
-Text Notes 6000 1850 0    50   ~ 0
+Text Notes 6100 1850 0    50   ~ 0
 To Fan (KDB0305HA3-CD7)
-Text Notes 5950 2600 0    50   ~ 0
-FG is open-drain. enable internal pull-up.
 Text Label 5150 2200 0    50   ~ 0
 PWM
 Wire Wire Line
-	5600 2100 5750 2100
+	5700 2100 5850 2100
 Wire Wire Line
-	5600 2100 5600 2150
+	5700 2100 5700 2150
 Wire Wire Line
 	4500 1350 4500 1500
 Wire Wire Line
-	5700 2200 5750 2200
+	5800 2200 5850 2200
 Text Notes 1100 2050 0    50   ~ 0
 5V±5%
 Wire Wire Line
@@ -190,7 +187,7 @@ F 3 "" H 3800 1250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5700 2200 5700 2350
+	5800 2200 5800 2350
 Wire Wire Line
 	3800 1250 3800 1350
 Connection ~ 3800 1350
@@ -229,34 +226,34 @@ $EndComp
 $Comp
 L power:GND #PWR07
 U 1 1 5D5E75C4
-P 5600 2150
-F 0 "#PWR07" H 5600 1900 50  0001 C CNN
-F 1 "GND" H 5605 1977 50  0000 C CNN
-F 2 "" H 5600 2150 50  0001 C CNN
-F 3 "" H 5600 2150 50  0001 C CNN
-	1    5600 2150
+P 5700 2150
+F 0 "#PWR07" H 5700 1900 50  0001 C CNN
+F 1 "GND" H 5705 1977 50  0000 C CNN
+F 2 "" H 5700 2150 50  0001 C CNN
+F 3 "" H 5700 2150 50  0001 C CNN
+	1    5700 2150
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:VCC #PWR08
 U 1 1 5D5EAA48
-P 5700 2350
-F 0 "#PWR08" H 5700 2200 50  0001 C CNN
-F 1 "VCC" H 5718 2523 50  0000 C CNN
-F 2 "" H 5700 2350 50  0001 C CNN
-F 3 "" H 5700 2350 50  0001 C CNN
-	1    5700 2350
+P 5800 2350
+F 0 "#PWR08" H 5800 2200 50  0001 C CNN
+F 1 "VCC" H 5818 2523 50  0000 C CNN
+F 2 "" H 5800 2350 50  0001 C CNN
+F 3 "" H 5800 2350 50  0001 C CNN
+	1    5800 2350
 	-1   0    0    1   
 $EndComp
 $Comp
 L Connector:Conn_01x04_Female J4
 U 1 1 5D5F6860
-P 5950 2000
-F 0 "J4" H 6000 1650 50  0000 L CNN
-F 1 "Pin socket L-shape" H 6000 1550 50  0000 L CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Horizontal" H 5950 2000 50  0001 C CNN
-F 3 "~" H 5950 2000 50  0001 C CNN
-	1    5950 2000
+P 6050 2000
+F 0 "J4" H 6100 1650 50  0000 L CNN
+F 1 "Pin socket L-shape" H 6100 1550 50  0000 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Horizontal" H 6050 2000 50  0001 C CNN
+F 3 "~" H 6050 2000 50  0001 C CNN
+	1    6050 2000
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -273,24 +270,24 @@ $EndComp
 $Comp
 L power:GND #PWR06
 U 1 1 5D600CEB
-P 5600 1600
-F 0 "#PWR06" H 5600 1350 50  0001 C CNN
-F 1 "GND" H 5605 1427 50  0000 C CNN
-F 2 "" H 5600 1600 50  0001 C CNN
-F 3 "" H 5600 1600 50  0001 C CNN
-	1    5600 1600
+P 5700 1600
+F 0 "#PWR06" H 5700 1350 50  0001 C CNN
+F 1 "GND" H 5705 1427 50  0000 C CNN
+F 2 "" H 5700 1600 50  0001 C CNN
+F 3 "" H 5700 1600 50  0001 C CNN
+	1    5700 1600
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5700 1550 5600 1550
+	5800 1550 5700 1550
 Wire Wire Line
-	5600 1550 5600 1600
+	5700 1550 5700 1600
 Wire Wire Line
 	5350 1350 5350 1800
 Wire Wire Line
 	5350 1800 5100 1800
 Wire Wire Line
-	5350 1350 5700 1350
+	5350 1350 5800 1350
 Text Label 5150 1800 0    50   ~ 0
 TX
 Text Label 5150 1900 0    50   ~ 0
@@ -300,19 +297,19 @@ Wire Wire Line
 Wire Wire Line
 	5450 1900 5450 1450
 Wire Wire Line
-	5450 1450 5700 1450
+	5450 1450 5800 1450
 Wire Wire Line
-	5750 1900 5500 1900
-Text Notes 5950 2800 0    50   ~ 0
+	5850 1900 5500 1900
+Text Notes 6050 2800 0    50   ~ 0
 To temperature sensor diode
 Text Label 5150 2100 0    50   ~ 0
 D+
 Wire Wire Line
-	5400 2850 5700 2850
+	5400 2850 5800 2850
 Wire Wire Line
 	5400 2950 5400 3050
 Wire Wire Line
-	5700 2950 5400 2950
+	5800 2950 5400 2950
 $Comp
 L power:GND #PWR05
 U 1 1 5D614B08
@@ -327,35 +324,70 @@ $EndComp
 $Comp
 L Connector:Conn_01x02_Female J3
 U 1 1 5D610DF4
-P 5900 2850
-F 0 "J3" H 5928 2826 50  0000 L CNN
-F 1 "Pin socket L-shape" H 5928 2735 50  0000 L CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Horizontal" H 5900 2850 50  0001 C CNN
-F 3 "~" H 5900 2850 50  0001 C CNN
-	1    5900 2850
+P 6000 2850
+F 0 "J3" H 6028 2826 50  0000 L CNN
+F 1 "Pin socket L-shape" H 6028 2735 50  0000 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x02_P2.54mm_Horizontal" H 6000 2850 50  0001 C CNN
+F 3 "~" H 6000 2850 50  0001 C CNN
+	1    6000 2850
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
 	5500 2200 5400 2200
-Wire Wire Line
-	5500 1900 5500 2200
 Wire Wire Line
 	5400 2200 5100 2200
 Wire Wire Line
 	5400 2100 5100 2100
 Wire Wire Line
 	5400 2100 5400 2850
+NoConn ~ 5100 2000
+NoConn ~ 5850 2000
 $Comp
-L Connector_Generic:Conn_01x03 J2
-U 1 1 5D5D4A8F
-P 5900 1450
-F 0 "J2" H 5980 1492 50  0000 L CNN
-F 1 "Hole" H 5980 1401 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 5900 1450 50  0001 C CNN
-F 3 "~" H 5900 1450 50  0001 C CNN
-	1    5900 1450
+L Device:R R1
+U 1 1 5D62348B
+P 5600 1000
+F 0 "R1" H 5670 1046 50  0000 L CNN
+F 1 "4.7k" H 5670 955 50  0000 L CNN
+F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal" V 5530 1000 50  0001 C CNN
+F 3 "~" H 5600 1000 50  0001 C CNN
+	1    5600 1000
 	1    0    0    -1  
 $EndComp
-NoConn ~ 5100 2000
-NoConn ~ 5750 2000
+$Comp
+L Connector_Generic:Conn_01x04 J2
+U 1 1 5D6235F9
+P 6000 1350
+F 0 "J2" H 6080 1342 50  0000 L CNN
+F 1 "Hole" H 6080 1251 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 6000 1350 50  0001 C CNN
+F 3 "~" H 6000 1350 50  0001 C CNN
+	1    6000 1350
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:VCC #PWR0103
+U 1 1 5D623D93
+P 5600 800
+F 0 "#PWR0103" H 5600 650 50  0001 C CNN
+F 1 "VCC" H 5617 973 50  0000 C CNN
+F 2 "" H 5600 800 50  0001 C CNN
+F 3 "" H 5600 800 50  0001 C CNN
+	1    5600 800 
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5600 800  5600 850 
+Wire Wire Line
+	5600 1150 5600 1250
+Wire Wire Line
+	5600 1250 5800 1250
+Wire Wire Line
+	5500 1900 5500 2200
+Wire Wire Line
+	5600 1250 5600 2300
+Wire Wire Line
+	5600 2300 5100 2300
+Connection ~ 5600 1250
+Text Label 5150 2300 0    50   ~ 0
+RESET
 $EndSCHEMATC
