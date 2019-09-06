@@ -1,13 +1,14 @@
 # ThinkPad E490 VRM Cooling Mod
 
-WIP
+- WIP
+- Only for IGP model
 
 ## How to flash the microcontroller
 ### Set fuse bits
 
 ``` sh
-# internal 8MHz clock, Self-programming enabled
-$ avrdude -c buspirate -P /dev/ttyUSB0 -p attiny85 -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xfe:m
+# internal 8MHz clock
+$ avrdude -c buspirate -P /dev/ttyUSB0 -p attiny85 -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
 ```
 
 ### Calibrate internal oscillator
@@ -48,47 +49,6 @@ void loop() {
 ``` sh
 $ vi firmware/src/main.cpp
 #define TUNED_OSCCAL     <CALIBRATED OSCCAL HERE>
-```
-
-### Patch and build bootloader
-
-``` sh
-$ git clone https://github.com/SpenceKonde/ATTinyCore
-$ cd ATTinyCore
-$ patch -p1 <<'EOS'
-diff --git a/avr/bootloaders/optiboot/optiboot.c b/avr/bootloaders/optiboot/optiboot.c
-index ecc21ca..2f84442 100644
---- a/avr/bootloaders/optiboot/optiboot.c
-+++ b/avr/bootloaders/optiboot/optiboot.c
-@@ -517,6 +517,7 @@ void pre_main(void) {
- 
- /* main program starts here */
- int main(void) {
-+  OSCCAL = <CALIBRATED OSCCAL HERE>;
-   uint8_t ch;
- 
-   /*
-@@ -833,7 +834,7 @@ int main(void) {
-     rstVect0_sav = buff.bptr[rstVect0];
-     rstVect1_sav = buff.bptr[rstVect1];
-     addr16_t vect;
--    vect.word = ((uint16_t)main);
-+    vect.word = ((uint16_t)main) - 1;
-     buff.bptr[0] = vect.bytes[0]; // rjmp to start of bootloader
-     buff.bptr[1] = vect.bytes[1] | 0xC0;  // make an "rjmp"
- #if (save_vect_num > SPM_PAGESIZE/2)
-@@ -862,7 +863,7 @@ int main(void) {
-         buff.bptr[saveVect0] = vect.bytes[0];
-         buff.bptr[saveVect1] = (vect.bytes[1] & 0x0F)| 0xC0;  // make an "rjmp"
-         // Add rjump to bootloader at RESET vector
--        vect.word = ((uint16_t)main); // (main) is always <= 0x0FFF; no masking needed.
-+        vect.word = ((uint16_t)main) - 1; // (main) is always <= 0x0FFF; no masking needed.
-         buff.bptr[0] = vect.bytes[0]; // rjmp 0x1c00 instruction
-       }
-EOS
-$ cd avr/bootloaders/optiboot
-$ make attiny85at8 PRODUCTION=1
-$ avrdude -c buspirate -P /dev/ttyUSB0 -p attiny85 -U flash:w:optiboot_attiny85_8000000L.hex
 ```
 
 ### Upload firmware

@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:vrmfanctl_pcb-cache
-EELAYER 26 0
+EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -246,28 +246,6 @@ F 3 "" H 5800 2350 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L Connector:Conn_01x04_Female J4
-U 1 1 5D5F6860
-P 6050 2000
-F 0 "J4" H 6100 1650 50  0000 L CNN
-F 1 "Pin socket L-shape" H 6100 1550 50  0000 L CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Horizontal" H 6050 2000 50  0001 C CNN
-F 3 "~" H 6050 2000 50  0001 C CNN
-	1    6050 2000
-	1    0    0    -1  
-$EndComp
-$Comp
-L MCU_Microchip_ATtiny:ATtiny85-20PU U1
-U 1 1 5D2BE157
-P 4500 2100
-F 0 "U1" H 3971 2146 50  0000 R CNN
-F 1 "ATtiny85-20PU" H 3971 2055 50  0000 R CNN
-F 2 "Package_DIP:DIP-8_W7.62mm" H 4500 2100 50  0001 C CIN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/atmel-2586-avr-8-bit-microcontroller-attiny25-attiny45-attiny85_datasheet.pdf" H 4500 2100 50  0001 C CNN
-	1    4500 2100
-	1    0    0    -1  
-$EndComp
-$Comp
 L power:GND #PWR06
 U 1 1 5D600CEB
 P 5700 1600
@@ -340,54 +318,44 @@ Wire Wire Line
 	5400 2100 5100 2100
 Wire Wire Line
 	5400 2100 5400 2850
-NoConn ~ 5100 2000
-NoConn ~ 5850 2000
-$Comp
-L Device:R R1
-U 1 1 5D62348B
-P 5600 1000
-F 0 "R1" H 5670 1046 50  0000 L CNN
-F 1 "4.7k" H 5670 955 50  0000 L CNN
-F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal" V 5530 1000 50  0001 C CNN
-F 3 "~" H 5600 1000 50  0001 C CNN
-	1    5600 1000
-	1    0    0    -1  
-$EndComp
-$Comp
-L Connector_Generic:Conn_01x04 J2
-U 1 1 5D6235F9
-P 6000 1350
-F 0 "J2" H 6080 1342 50  0000 L CNN
-F 1 "Hole" H 6080 1251 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical" H 6000 1350 50  0001 C CNN
-F 3 "~" H 6000 1350 50  0001 C CNN
-	1    6000 1350
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:VCC #PWR0103
-U 1 1 5D623D93
-P 5600 800
-F 0 "#PWR0103" H 5600 650 50  0001 C CNN
-F 1 "VCC" H 5617 973 50  0000 C CNN
-F 2 "" H 5600 800 50  0001 C CNN
-F 3 "" H 5600 800 50  0001 C CNN
-	1    5600 800 
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	5600 800  5600 850 
-Wire Wire Line
-	5600 1150 5600 1250
-Wire Wire Line
-	5600 1250 5800 1250
 Wire Wire Line
 	5500 1900 5500 2200
+$Comp
+L Connector:Conn_01x04_Female J4
+U 1 1 5D5F6860
+P 6050 2000
+F 0 "J4" H 6100 1650 50  0000 L CNN
+F 1 "Pin socket L-shape" H 6100 1550 50  0000 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Horizontal" H 6050 2000 50  0001 C CNN
+F 3 "~" H 6050 2000 50  0001 C CNN
+	1    6050 2000
+	1    0    0    -1  
+$EndComp
+$Comp
+L MCU_Microchip_ATtiny:ATtiny85-20PU U1
+U 1 1 5D2BE157
+P 4500 2100
+F 0 "U1" H 3971 2146 50  0000 R CNN
+F 1 "ATtiny85-20PU" H 3971 2055 50  0000 R CNN
+F 2 "Package_DIP:DIP-8_W7.62mm" H 4500 2100 50  0001 C CIN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/atmel-2586-avr-8-bit-microcontroller-attiny25-attiny45-attiny85_datasheet.pdf" H 4500 2100 50  0001 C CNN
+	1    4500 2100
+	1    0    0    -1  
+$EndComp
 Wire Wire Line
-	5600 1250 5600 2300
-Wire Wire Line
-	5600 2300 5100 2300
-Connection ~ 5600 1250
-Text Label 5150 2300 0    50   ~ 0
-RESET
+	5100 2000 5850 2000
+Text Label 5150 2000 0    50   ~ 0
+FG
+$Comp
+L Connector_Generic:Conn_01x03 J2
+U 1 1 5D6F20BE
+P 6000 1450
+F 0 "J2" H 6080 1492 50  0000 L CNN
+F 1 "Through Hole" H 6080 1401 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 6000 1450 50  0001 C CNN
+F 3 "~" H 6000 1450 50  0001 C CNN
+	1    6000 1450
+	1    0    0    -1  
+$EndComp
+NoConn ~ 5100 2300
 $EndSCHEMATC
