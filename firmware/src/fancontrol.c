@@ -28,7 +28,7 @@
 
 #define TICK         512 //control loop timer period [ms]
 
-volatile bool tick = false;
+static volatile bool tick = false;
 
 void init_fan_control() {
     GTCCR &= ~(_BV(TSM) | _BV(PSR0));
@@ -51,12 +51,14 @@ ISR(TIM0_COMPA_vect) {
     tick = true;
 }
 
-uint8_t duty = 0;
-uint16_t startup_wait_remain = 0;
+static uint8_t duty = 0;
 
 void fan_control(const struct Config *config) {
     if (!tick) return;
     tick = false;
+
+    static uint16_t startup_wait_remain = 0;
+    uint8_t next_duty = 0;
 
     if (startup_wait_remain > TICK) {
         startup_wait_remain -= TICK;
@@ -66,8 +68,7 @@ void fan_control(const struct Config *config) {
         start_tachometer();
     }
 
-    int8_t temp = measure_vrm_temp(config);
-    uint8_t next_duty = 0;
+    int8_t temp = measure_temp(config);
 
     if (temp <= config->fan_stop_temp) {
         next_duty = 0;
