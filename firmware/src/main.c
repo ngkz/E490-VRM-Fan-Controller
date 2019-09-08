@@ -30,7 +30,7 @@
 
 #define TUNED_OSCCAL 0x99
 
-struct Config config;
+static struct Config config;
 
 int main() {
     // decrease clock speed
