@@ -23,7 +23,9 @@
 
 struct Config;
 
+#define ADC_VALUE_TO_VOLTAGE(v) (v * 1100 / 1024) //1.1v reference, 10bit, mV/C
+
 void init_thermometer();
-int8_t measure_vrm_temp(const struct Config *config);
+int8_t measure_temp(const struct Config *config);
 
 #endif // __THERMOMETER_H_

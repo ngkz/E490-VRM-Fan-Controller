@@ -75,7 +75,7 @@ static int read_adc() {
     return result_high << 8 | result_low;
 }
 
-int8_t measure_vrm_temp(const struct Config *config) {
+int8_t measure_temp(const struct Config *config) {
     enable_adc();
     diode_on();
 
