@@ -106,3 +106,7 @@ void fan_control(const struct Config *config) {
     duty = next_duty;
     reset_tachometer();
 }
+
+uint8_t current_duty() {
+    return duty;
+}

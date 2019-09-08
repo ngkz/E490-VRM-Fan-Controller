@@ -23,5 +23,6 @@ struct Config;
 
 void init_fan_control();
 void fan_control(const struct Config *config);
+uint8_t current_duty();
 
 #endif // __FANCONTROL_H_
