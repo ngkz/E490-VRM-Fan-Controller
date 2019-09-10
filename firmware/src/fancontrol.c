@@ -60,12 +60,14 @@ void fan_control(const struct Config *config) {
     static uint16_t startup_wait_remain = 0;
     uint8_t next_duty = 0;
 
+    tachometer_capture(config, TICK);
+
     if (startup_wait_remain > TICK) {
         startup_wait_remain -= TICK;
     } else {
         // startup complete
         startup_wait_remain = 0;
-        start_tachometer();
+        tachometer_start();
     }
 
     int8_t temp = measure_temp(config);
@@ -93,18 +95,17 @@ void fan_control(const struct Config *config) {
 
     if (0 < next_duty && next_duty < config->startup_duty &&
             (startup_wait_remain > 0 /* starting up */ ||
-                read_fan_rpm(config, TICK) < config->min_rpm /* fan stalled */)) {
+                tachometer_read() < config->min_rpm /* fan stalled */)) {
         next_duty = config->startup_duty;
     }
 
     if (duty > 0 && next_duty == 0) {
         // fan stop
-        stop_tachometer();
+        tachometer_stop();
     }
 
     set_fan_duty(next_duty);
     duty = next_duty;
-    reset_tachometer();
 }
 
 uint8_t current_duty() {

@@ -26,7 +26,8 @@
 #define P_FG         PB2 //INT0
 #define P_PWM        PB4
 
-volatile uint8_t fg_pulse_count = 0;
+static volatile uint8_t fg_pulse_count = 0;
+static unsigned int rpm;
 
 void init_fan() {
     DDRB |= _BV(P_PWM);   // PWM out
@@ -94,14 +95,14 @@ void set_fan_duty(uint8_t duty) {
     }
 }
 
-void start_tachometer() {
+void tachometer_start() {
     // enable INT0 interrupt
     fg_pulse_count = 0;
     GIFR |= _BV(INTF0);
     GIMSK |= _BV(INT0);
 }
 
-void stop_tachometer() {
+void tachometer_stop() {
     // disable INT0 interrupt
     GIMSK &= ~_BV(INT0);
 }
@@ -110,10 +111,11 @@ ISR(INT0_vect) {
     fg_pulse_count++;
 }
 
-void reset_tachometer() {
+void tachometer_capture(const struct Config *config, int period) {
+    rpm = fg_pulse_count / config->pulse_per_revolution * 60000 / period;
     fg_pulse_count = 0;
 }
 
-uint16_t read_fan_rpm(const struct Config *config, int reset_period) {
-    return fg_pulse_count / config->pulse_per_revolution * 60000 / reset_period;
+uint16_t tachometer_read() {
+    return rpm;
 }

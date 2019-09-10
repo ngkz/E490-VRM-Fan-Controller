@@ -25,9 +25,9 @@ struct Config;
 
 void init_fan();
 void set_fan_duty(uint8_t duty);
-void start_tachometer();
-void stop_tachometer();
-void reset_tachometer();
-uint16_t read_fan_rpm(const struct Config *config, int reset_period);
+void tachometer_start();
+void tachometer_stop();
+void tachometer_capture(const struct Config *config, int period);
+unsigned int tachometer_read();
 
 #endif // __FAN_H_
