@@ -26,7 +26,7 @@
 #include "fan.h"
 #include "thermometer.h"
 
-#define TICK         512 //control loop timer period [ms]
+#define TICK         500 //control loop timer period [ms]
 
 static volatile bool tick = false;
 
@@ -36,8 +36,8 @@ void init_fan_control() {
     TCCR0A = _BV(WGM01);
     // reset counter
     TCNT0 = 0;
-    // 512ms period
-    OCR0A = 249;
+    // 500ms period
+    OCR0A = 244;
     OCR0B = 0;
     // no force output compare match, start timer 0, 125kHz / 256 = 488.2Hz clock
     TCCR0B = _BV(CS02) | _BV(CS00);
