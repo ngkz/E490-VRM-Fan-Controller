@@ -75,7 +75,7 @@ static int read_adc() {
     return result_high << 8 | result_low;
 }
 
-int8_t measure_temp(const struct Config *config) {
+int8_t measure_temp() {
     enable_adc();
     diode_on();
 
@@ -84,6 +84,6 @@ int8_t measure_temp(const struct Config *config) {
     diode_off();
     disable_adc();
 
-    return (int8_t)roundf((diode_voltage - config->zero_c_voltage) /
-                          config->temperature_coefficient);
+    return (int8_t)roundf((diode_voltage - config.zero_c_voltage) /
+                          config.temperature_coefficient);
 }

@@ -111,8 +111,8 @@ ISR(INT0_vect) {
     fg_pulse_count++;
 }
 
-void tachometer_capture(const struct Config *config, int period) {
-    rpm = fg_pulse_count / config->pulse_per_revolution * 60000 / period;
+void tachometer_capture(int period) {
+    rpm = fg_pulse_count / config.pulse_per_revolution * 60000 / period;
     fg_pulse_count = 0;
 }
 

@@ -33,7 +33,13 @@ struct Config config_EE EEMEM = {
     .fg_delay                = 1000, // ms
 };
 
-void load_config(struct Config *config) {
+struct Config config;
+
+static void load_config() {
     eeprom_busy_wait();
-    eeprom_read_block(config, &config_EE, sizeof(struct Config));
+    eeprom_read_block(&config, &config_EE, sizeof(struct Config));
+}
+
+void init_config() {
+    load_config();
 }

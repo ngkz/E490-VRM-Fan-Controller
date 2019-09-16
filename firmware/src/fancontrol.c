@@ -53,14 +53,14 @@ ISR(TIM0_COMPA_vect) {
 
 static uint8_t duty = 0;
 
-void fan_control(const struct Config *config) {
+void fan_control() {
     if (!tick) return;
     tick = false;
 
     static uint16_t startup_wait_remain = 0;
     uint8_t next_duty = 0;
 
-    tachometer_capture(config, TICK);
+    tachometer_capture(TICK);
 
     if (startup_wait_remain > TICK) {
         startup_wait_remain -= TICK;
@@ -70,33 +70,33 @@ void fan_control(const struct Config *config) {
         tachometer_start();
     }
 
-    int8_t temp = measure_temp(config);
+    int8_t temp = measure_temp();
 
-    if (temp <= config->fan_stop_temp) {
+    if (temp <= config.fan_stop_temp) {
         next_duty = 0;
-    } else if (config->fan_stop_temp < temp && temp < config->fan_start_temp) {
+    } else if (config.fan_stop_temp < temp && temp < config.fan_start_temp) {
         if (duty == 0) {
             next_duty = 0;
         } else {
-            next_duty = config->min_duty;
+            next_duty = config.min_duty;
         }
-    } else if (config->fan_start_temp <= temp && temp < config->fan_full_speed_temp) {
-        next_duty = (uint8_t)roundf((float)(config->max_duty - config->min_duty) /
-                                            (config->fan_full_speed_temp - config->fan_start_temp) *
-                                                (temp - config->fan_start_temp)) + config->min_duty;
-    } else if (temp >= config->fan_full_speed_temp) {
-        next_duty = config->max_duty;
+    } else if (config.fan_start_temp <= temp && temp < config.fan_full_speed_temp) {
+        next_duty = (uint8_t)roundf((float)(config.max_duty - config.min_duty) /
+                                           (config.fan_full_speed_temp - config.fan_start_temp) *
+                                                (temp - config.fan_start_temp)) + config.min_duty;
+    } else if (temp >= config.fan_full_speed_temp) {
+        next_duty = config.max_duty;
     }
 
     if (duty == 0 && next_duty > 0) {
         // fan startup
-        startup_wait_remain = config->fg_delay;
+        startup_wait_remain = config.fg_delay;
     }
 
-    if (0 < next_duty && next_duty < config->startup_duty &&
+    if (0 < next_duty && next_duty < config.startup_duty &&
             (startup_wait_remain > 0 /* starting up */ ||
-                tachometer_read() < config->min_rpm /* fan stalled */)) {
-        next_duty = config->startup_duty;
+                tachometer_read() < config.min_rpm /* fan stalled */)) {
+        next_duty = config.startup_duty;
     }
 
     if (duty > 0 && next_duty == 0) {

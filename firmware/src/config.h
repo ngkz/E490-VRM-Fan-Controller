@@ -35,6 +35,8 @@ struct Config {
     uint16_t fg_delay;
 };
 
-void load_config(struct Config *config);
+extern struct Config config;
+
+void init_config();
 
 #endif // __CONFIG_H_

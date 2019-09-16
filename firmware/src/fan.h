@@ -21,13 +21,11 @@
 
 #include <stdint.h>
 
-struct Config;
-
 void init_fan();
 void set_fan_duty(uint8_t duty);
 void tachometer_start();
 void tachometer_stop();
-void tachometer_capture(const struct Config *config, int period);
+void tachometer_capture(int period);
 unsigned int tachometer_read();
 
 #endif // __FAN_H_

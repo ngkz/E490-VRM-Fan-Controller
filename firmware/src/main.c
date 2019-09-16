@@ -30,8 +30,6 @@
 
 #define TUNED_OSCCAL 0x99
 
-static struct Config config;
-
 int main() {
     // decrease clock speed
     clock_prescale_set(clock_div_64); // 8MHz / 64 = 125kHz
@@ -39,8 +37,7 @@ int main() {
     // calibrate internal oscillator
     OSCCAL = TUNED_OSCCAL;
 
-    load_config(&config);
-
+    init_config();
     init_uart_stdio();
     init_fan();
     init_thermometer();
@@ -54,7 +51,7 @@ int main() {
 
     for (;;) {
         // control loop timer interrupt or pin change interrupt or FG rising interrupt
-        fan_control(&config);
+        fan_control();
         sleep_mode();
     }
 
