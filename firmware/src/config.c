@@ -25,6 +25,7 @@
 #include <limits.h>
 #include "uart.h"
 #include "thermometer.h"
+#include "fancontrol.h"
 
 struct Config config_EE EEMEM = {
     .zero_c_voltage          = 0,
@@ -59,6 +60,7 @@ static void set_fan_stop_temp(const char *arg);
 static void set_pulse_per_revolution(const char *arg);
 static void set_min_rpm(const char *arg);
 static void set_fg_delay(const char *arg);
+static void toggle_trace(const char *arg);
 static void show_help(const char *arg);
 
 //avr-gcc doesn't merge duplicated PSTR constant :(
@@ -76,6 +78,7 @@ static const char FAN_STOP_TEMP[] PROGMEM = "fan_stop_temp";
 static const char PULSE_PER_REVOLUTION[] PROGMEM = "pulse_per_revolution";
 static const char MIN_RPM[] PROGMEM = "min_rpm";
 static const char FG_DELAY[] PROGMEM = "fg_delay";
+static const char TRACE[] PROGMEM = "trace";
 static const char HELP[] PROGMEM = "help";
 static const char EXIT[] PROGMEM = "exit";
 
@@ -91,6 +94,7 @@ static const struct Command commands[] PROGMEM = {
     {PULSE_PER_REVOLUTION,    1, set_pulse_per_revolution},
     {MIN_RPM,                 1, set_min_rpm},
     {FG_DELAY,                1, set_fg_delay},
+    {TRACE,                   0, toggle_trace},
     {HELP,                    0, show_help},
     {EXIT,                    0, NULL},
 };
@@ -220,6 +224,10 @@ static void set_min_rpm(const char *arg) {
 
 static void set_fg_delay(const char *arg) {
     set_uint16(&config.fg_delay, arg);
+}
+
+static void toggle_trace(const char *arg) {
+    toggle_fan_control_trace();
 }
 
 static void show_help(const char *arg) {
