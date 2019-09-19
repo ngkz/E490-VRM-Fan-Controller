@@ -25,7 +25,6 @@ void init_fan();
 void set_fan_duty(uint8_t duty);
 void tachometer_start();
 void tachometer_stop();
-void tachometer_capture(int period);
-unsigned int tachometer_read();
+uint16_t tachometer_capture(int capture_period);
 
 #endif // __FAN_H_

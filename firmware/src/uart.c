@@ -17,7 +17,7 @@
  */
 
 /*
-  This code derived from ATTinyCore:
+  Part of this code derived from ATTinyCore:
   TinySoftwareSerial.cpp - Hardware serial library for Wiring
   Copyright (c) 2006 Nicholas Zambetti.  All right reserved.
   This library is free software; you can redistribute it and/or
@@ -33,11 +33,26 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
   Modified 23 November 2006 by David A. Mellis
   Modified 28 September 2010 by Mark Sproul
-*/
 
-#include <stdio.h>
+  Print.cpp - Base class that provides print() and println()
+  Copyright (c) 2008 David A. Mellis.  All right reserved.
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+  Modified 23 November 2006 by David A. Mellis
+ */
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include "uart.h"
 
 #define BAUD_RATE               1200
@@ -47,15 +62,11 @@
 #define SERIAL_BUFFER_SIZE      16
 #define ONEBIT_DELAY_COUNT      ((F_CPU/BAUD_RATE-8)/3)
 
-static int putch(char ch, FILE *stream);
-static int getch(FILE *stream);
-
-static uint8_t rxbuf [SERIAL_BUFFER_SIZE];
+static char rxbuf [SERIAL_BUFFER_SIZE];
 static volatile uint8_t rxbuf_head;
 static uint8_t rxbuf_tail;
-static FILE uart_stdio = FDEV_SETUP_STREAM(putch, getch, _FDEV_SETUP_RW);
 
-static int putch(char ch, FILE *stream) {
+void putch(char ch) {
     uint8_t oldSREG = SREG;
     cli(); //Prevent interrupts from breaking the transmission.
     //it can either receive or send, not both (because receiving requires an interrupt and would stall transmission
@@ -82,7 +93,7 @@ static int putch(char ch, FILE *stream) {
     );
 
     SREG = oldSREG;
-    return 0;
+    return;
 }
 
 ISR(PCINT0_vect) {
@@ -122,20 +133,20 @@ ISR(PCINT0_vect) {
     GIFR |= _BV(PCIF);
 }
 
-static int getch(FILE *stream) {
+char getch() {
     while (rxbuf_head == rxbuf_tail);
 
-    unsigned char c = rxbuf[rxbuf_tail];
+    char c = rxbuf[rxbuf_tail];
     rxbuf_tail = (rxbuf_tail + 1) % SERIAL_BUFFER_SIZE;
 
     return c;
 }
 
-uint8_t uart_input_available() {
+uint8_t available_input() {
     return (SERIAL_BUFFER_SIZE + rxbuf_head - rxbuf_tail) % SERIAL_BUFFER_SIZE;
 }
 
-void init_uart_stdio() {
+void init_uart() {
     DDRB |= _BV(P_TX); //TX output
     DDRB &= _BV(P_RX); //RX input
     PORTB |= _BV(P_TX) | _BV(P_RX); //TX high, pull-up RX
@@ -143,7 +154,124 @@ void init_uart_stdio() {
     // RX level change generates a pin chage interrupt
     PCMSK = _BV(PCINT_RX);
     GIMSK |= _BV(PCIE);
+}
 
-    stdout = &uart_stdio;
-    stdin  = &uart_stdio;
+void putln() {
+    putch('\n');
+}
+
+void putchln(char ch) {
+    putch(ch);
+    putln();
+}
+
+void putP(const char *str /* PROGMEM */) {
+    for (;;) {
+        char ch = pgm_read_byte(str++);
+        if (!ch) break;
+        putch(ch);
+    }
+}
+
+void putPln(const char *str /* PROGMEM */) {
+    putP(str);
+    putln();
+}
+
+void put(const char *str) {
+    while (*str) putch(*str++);
+}
+
+void putd(int32_t number) {
+    if (number < 0) {
+        putch('-');
+        number = -number;
+    }
+
+    putu(number);
+}
+
+void putu(uint32_t number) {
+    char buf[10 + 1];
+    char *str = &buf[sizeof(buf) - 1];
+
+    *str = '\0';
+
+    do {
+        *--str = '0' + number % 10;
+        number /= 10;
+    } while(number);
+
+    put(str);
+}
+
+void putuln(uint32_t val) {
+    putu(val);
+    putln();
+}
+
+void putf(float number, uint8_t digits) {
+    // Handle negative numbers
+    if (number < 0.0) {
+         putch('-');
+         number = -number;
+    }
+
+    // Round correctly so that print(1.999, 2) prints as "2.00"
+    float rounding = 0.5;
+    for (uint8_t i=0; i<digits; ++i) {
+        rounding /= 10.0;
+    }
+
+    number += rounding;
+
+    // Extract the integer part of the number and print it
+    unsigned long int_part = (unsigned long)number;
+    float remainder = number - (float)int_part;
+    putu(int_part);
+
+    // Print the decimal point, but only if there are digits beyond
+    if (digits > 0) {
+        putch('.');
+    }
+
+    // Extract digits from the remainder one at a time
+    while (digits-- > 0) {
+        remainder *= 10.0;
+        int toPrint = (int)remainder;
+        putu(toPrint);
+        remainder -= toPrint;
+    }
+}
+
+void promptP(char *dest, uint8_t len, const char *prompt /* PROGMEM */) {
+    putP(prompt);
+
+    size_t idx = 0;
+
+    for (;;) {
+        char ch = getch();
+        switch(ch) {
+        case '\r':
+        case '\n':
+            if (len > 0) dest[idx] = 0;
+            putln();
+            return;
+        case 0x7f:
+        case 0x08:
+            //delete or backspace
+            if (idx > 0) {
+                idx--;
+                putch(ch);
+            }
+            break;
+        default:
+            if (idx + 1 < len) {
+                dest[idx] = ch;
+                idx++;
+                putch(ch);
+            }
+            break;
+        }
+    }
 }

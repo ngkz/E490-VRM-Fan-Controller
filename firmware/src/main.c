@@ -16,16 +16,15 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <math.h>
-#include <stdint.h>
 #include <avr/io.h>
-#include <avr/power.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
+#include <avr/power.h>
 #include "config.h"
 #include "uart.h"
 #include "fan.h"
 #include "thermometer.h"
+#include "timer.h"
 #include "fancontrol.h"
 
 #define TUNED_OSCCAL 0x99
@@ -38,10 +37,11 @@ int main() {
     OSCCAL = TUNED_OSCCAL;
 
     init_config();
-    init_uart_stdio();
+    init_uart();
     init_fan();
     init_thermometer();
-    init_fan_control();
+    init_timer();
+    start_timer();
 
     power_usi_disable();
 
@@ -50,8 +50,22 @@ int main() {
     set_sleep_mode(SLEEP_MODE_IDLE);
 
     for (;;) {
-        // control loop timer interrupt or pin change interrupt or FG rising interrupt
-        fan_control();
+        while (available_input() > 0) {
+            if (getch() == '\n') {
+                stop_fan_control();
+                stop_timer();
+                config_ui();
+                start_timer();
+                reset_fan_control();
+                break;
+            }
+        }
+
+        if (is_timer_elapsed()) {
+            clear_elapsed_flag();
+            fan_control_loop(TICK);
+        }
+
         sleep_mode();
     }
 

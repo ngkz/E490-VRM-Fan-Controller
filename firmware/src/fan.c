@@ -27,7 +27,6 @@
 #define P_PWM        PB4
 
 static volatile uint8_t fg_pulse_count = 0;
-static unsigned int rpm;
 
 void init_fan() {
     DDRB |= _BV(P_PWM);   // PWM out
@@ -111,11 +110,8 @@ ISR(INT0_vect) {
     fg_pulse_count++;
 }
 
-void tachometer_capture(int period) {
-    rpm = fg_pulse_count / config.pulse_per_revolution * 60000 / period;
+uint16_t tachometer_capture(int capture_period) {
+    uint16_t rpm = fg_pulse_count / config.pulse_per_revolution * 60000 / capture_period;
     fg_pulse_count = 0;
-}
-
-uint16_t tachometer_read() {
     return rpm;
 }

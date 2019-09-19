@@ -16,28 +16,17 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef __CONFIG_H_
-#define __CONFIG_H_
+#ifndef __TIMER_H_
+#define __TIMER_H_
 
-#include <stdint.h>
+#include <stdbool.h>
 
-struct Config {
-    uint16_t zero_c_voltage;
-    float    temperature_coefficient;
-    uint8_t  min_duty;
-    uint8_t  max_duty;
-    uint8_t  startup_duty;
-    int8_t   fan_start_temp;
-    int8_t   fan_full_speed_temp;
-    int8_t   fan_stop_temp;
-    uint8_t  pulse_per_revolution;
-    uint16_t min_rpm;
-    uint16_t fg_delay;
-};
+#define TICK 500 //[ms]
 
-extern struct Config config;
+void init_timer();
+void start_timer();
+void stop_timer();
+bool is_timer_elapsed();
+void clear_elapsed_flag();
 
-void init_config();
-void config_ui();
-
-#endif // __CONFIG_H_
+#endif // __TIMER_H_

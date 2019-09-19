@@ -21,7 +21,19 @@
 
 #include <stdint.h>
 
-void init_uart_stdio();
-uint8_t uart_input_available();
+void init_uart();
+void putch(char ch);
+char getch();
+uint8_t available_input();
+void putln();
+void putchln(char ch);
+void putP(const char *str /* PROGMEM */);
+void putPln(const char *str /* PROGMEM */);
+void put(const char *str);
+void putd(int32_t number);
+void putu(uint32_t number);
+void putuln(uint32_t number);
+void putf(float number, uint8_t digits);
+void promptP(char *dest, uint8_t len, const char *prompt /* PROGMEM */);
 
 #endif // __UART_H_

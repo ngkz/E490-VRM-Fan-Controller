@@ -37,6 +37,16 @@ static void diode_off() {
     DDRB |= _BV(P_DIODE);
 }
 
+static void enable_adc() {
+    power_adc_enable();
+    ADCSRA |= _BV(ADEN);
+}
+
+static void disable_adc() {
+    ADCSRA &= ~_BV(ADEN);
+    power_adc_disable();
+}
+
 void init_thermometer() {
     // use internal 1.1V voltage reference, no left adjust result, input is D+(PB3)
     ADMUX = _BV(REFS1) | ADMUX_DIODE << MUX0;
@@ -54,17 +64,7 @@ void init_thermometer() {
     diode_off();
 }
 
-static void enable_adc() {
-    power_adc_enable();
-    ADCSRA |= _BV(ADEN);
-}
-
-static void disable_adc() {
-    ADCSRA &= ~_BV(ADEN);
-    power_adc_disable();
-}
-
-static int read_adc() {
+static uint16_t adc() {
     // start conversion
     ADCSRA |= _BV(ADSC);
     // wait for conversion to complete
@@ -75,15 +75,16 @@ static int read_adc() {
     return result_high << 8 | result_low;
 }
 
-int8_t measure_temp() {
+uint16_t adc_diode_voltage() {
     enable_adc();
     diode_on();
-
-    int diode_voltage = (read_adc() + read_adc()) / 2;
-
+    uint16_t voltage = (adc() + adc() + adc()) / 3;
     diode_off();
     disable_adc();
+    return voltage;
+}
 
-    return (int8_t)roundf((diode_voltage - config.zero_c_voltage) /
-                          config.temperature_coefficient);
+int8_t measure_temp() {
+    return (int8_t)roundf((adc_diode_voltage() - config.zero_c_voltage) /
+                           config.temperature_coefficient);
 }

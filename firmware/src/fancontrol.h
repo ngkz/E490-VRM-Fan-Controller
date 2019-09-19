@@ -19,8 +19,10 @@
 #ifndef __FANCONTROL_H_
 #define __FANCONTROL_H_
 
-void init_fan_control();
-void fan_control();
-uint8_t current_duty();
+#include <stdint.h>
+
+void reset_fan_control();
+void fan_control_loop(int control_period);
+void stop_fan_control();
 
 #endif // __FANCONTROL_H_

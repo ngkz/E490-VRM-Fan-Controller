@@ -17,59 +17,31 @@
  */
 
 #include <math.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <avr/interrupt.h>
-#include <avr/io.h>
-#include "fancontrol.h"
 #include "config.h"
+#include "fancontrol.h"
 #include "fan.h"
 #include "thermometer.h"
 
-#define TICK         500 //control loop timer period [ms]
+static uint8_t duty;
+static uint16_t startup_wait_remain;
 
-static volatile bool tick = false;
-
-void init_fan_control() {
-    GTCCR &= ~(_BV(TSM) | _BV(PSR0));
-    // disconnect OC0A and OC0B, CTC mode
-    TCCR0A = _BV(WGM01);
-    // reset counter
-    TCNT0 = 0;
-    // 500ms period
-    OCR0A = 244;
-    OCR0B = 0;
-    // no force output compare match, start timer 0, 125kHz / 256 = 488.2Hz clock
-    TCCR0B = _BV(CS02) | _BV(CS00);
-    // enable Timer/Counter0 output compare match A interrupt, disable output compare match B interrupt and overflow interrupt
-    TIMSK = (TIMSK & ~(_BV(OCIE0A) | _BV(OCIE0B) | _BV(TOIE0))) | _BV(OCIE0A);
-    // clear the Timer1 interrupt flags
-    TIFR |= _BV(OCF0A) | _BV(OCF0B) | _BV(TOV0);
+void reset_fan_control() {
+    duty = 0;
+    startup_wait_remain = 0;
 }
 
-ISR(TIM0_COMPA_vect) {
-    tick = true;
-}
+void fan_control_loop(int control_period) {
+    uint16_t rpm = tachometer_capture(control_period);
 
-static uint8_t duty = 0;
-
-void fan_control() {
-    if (!tick) return;
-    tick = false;
-
-    static uint16_t startup_wait_remain = 0;
-    uint8_t next_duty = 0;
-
-    tachometer_capture(TICK);
-
-    if (startup_wait_remain > TICK) {
-        startup_wait_remain -= TICK;
+    if (startup_wait_remain > control_period) {
+        startup_wait_remain -= control_period;
     } else {
         // startup complete
         startup_wait_remain = 0;
         tachometer_start();
     }
 
+    uint8_t next_duty;
     int8_t temp = measure_temp();
 
     if (temp <= config.fan_stop_temp) {
@@ -84,10 +56,11 @@ void fan_control() {
         next_duty = (uint8_t)roundf((float)(config.max_duty - config.min_duty) /
                                            (config.fan_full_speed_temp - config.fan_start_temp) *
                                                 (temp - config.fan_start_temp)) + config.min_duty;
-    } else if (temp >= config.fan_full_speed_temp) {
+    } else { //temp >= config.fan_full_speed_temp
         next_duty = config.max_duty;
     }
 
+    // ensure fan runs at least startup duty when FG signal is indeterminate
     if (duty == 0 && next_duty > 0) {
         // fan startup
         startup_wait_remain = config.fg_delay;
@@ -95,7 +68,7 @@ void fan_control() {
 
     if (0 < next_duty && next_duty < config.startup_duty &&
             (startup_wait_remain > 0 /* starting up */ ||
-                tachometer_read() < config.min_rpm /* fan stalled */)) {
+                rpm < config.min_rpm /* fan stalled */)) {
         next_duty = config.startup_duty;
     }
 
@@ -108,6 +81,7 @@ void fan_control() {
     duty = next_duty;
 }
 
-uint8_t current_duty() {
-    return duty;
+void stop_fan_control() {
+    set_fan_duty(0);
+    tachometer_stop();
 }
