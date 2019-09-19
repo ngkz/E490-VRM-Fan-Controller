@@ -23,22 +23,27 @@
 #include "thermometer.h"
 
 static uint8_t duty;
-static uint16_t startup_wait_remain;
+static uint16_t fg_wait_remain;
 
 void reset_fan_control() {
     duty = 0;
-    startup_wait_remain = 0;
+    fg_wait_remain = 0;
 }
 
 void fan_control_loop(int control_period) {
     uint16_t rpm = tachometer_capture(control_period);
 
-    if (startup_wait_remain > control_period) {
-        startup_wait_remain -= control_period;
-    } else {
-        // startup complete
-        startup_wait_remain = 0;
-        tachometer_start();
+    if (fg_wait_remain > 0) {
+        if (fg_wait_remain > control_period) {
+            fg_wait_remain -= control_period;
+        } else {
+            fg_wait_remain = 0;
+        }
+
+        if (fg_wait_remain == 0) {
+            // FG ready
+            tachometer_start();
+        }
     }
 
     uint8_t next_duty;
@@ -63,12 +68,12 @@ void fan_control_loop(int control_period) {
     // ensure fan runs at least startup duty when FG signal is indeterminate
     if (duty == 0 && next_duty > 0) {
         // fan startup
-        startup_wait_remain = config.fg_delay;
+        fg_wait_remain = config.fg_delay;
     }
 
     if (0 < next_duty && next_duty < config.startup_duty &&
-            (startup_wait_remain > 0 /* starting up */ ||
-                rpm < config.min_rpm /* fan stalled */)) {
+            (fg_wait_remain > 0 /* FG not ready, tachometer stopped */ ||
+             rpm < config.min_rpm /* fan stalled */)) {
         next_duty = config.startup_duty;
     }
 
