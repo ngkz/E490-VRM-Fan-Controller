@@ -147,9 +147,12 @@ uint8_t available_input() {
 }
 
 void init_uart() {
-    DDRB |= _BV(P_TX); //TX output
-    DDRB &= _BV(P_RX); //RX input
-    PORTB |= _BV(P_TX) | _BV(P_RX); //TX high, pull-up RX
+    //TX output, high
+    PORTB |= _BV(P_TX);
+    DDRB |= _BV(P_TX);
+    //RX input, pull-up
+    DDRB &= ~_BV(P_RX); //RX input
+    PORTB |= _BV(P_RX); //pull-up RX
 
     // RX level change generates a pin chage interrupt
     PCMSK = _BV(PCINT_RX);
