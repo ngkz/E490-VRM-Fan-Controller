@@ -113,7 +113,7 @@ ISR(PCINT0_vect) {
         "     ror  %[ch]\n"                          // |
         "     rjmp 3b\n"                             //_|
         "5:\n"
-        : [ch] "=r" (ch)
+        : [ch] "=&r" (ch)
         : [count] "r" ((uint8_t)9),
           [port] "I" (_SFR_IO_ADDR(PORTB)),
           [pin] "I" (P_RX),
