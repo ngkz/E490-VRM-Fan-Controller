@@ -17,7 +17,6 @@
   },
   "name": "ThinkPad E490 VRM Cooling Mod Fan Controller Board",
   "upload": {
-    "extra_flags": "-e",
     "maximum_ram_size": 512,
     "maximum_size": 8192,
     "protocol": "usbtiny"
