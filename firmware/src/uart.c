@@ -54,6 +54,7 @@
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
 #include "uart.h"
+#include "asciichr.h"
 
 #define BAUD_RATE               1200
 #define P_TX                    PB0
@@ -260,18 +261,18 @@ void promptP(char *dest, uint8_t len, const char *prompt /* PROGMEM */) {
     for (;;) {
         char ch = getch();
         switch(ch) {
-        case '\r':
-            break;
-        case '\n':
+        case ASCII_CR:
+        case ASCII_LF:
             if (len > 0) dest[idx] = 0;
             putln();
             return;
-        case 0x7f:
-        case 0x08:
-            //delete or backspace
+        case ASCII_BS:
+        case ASCII_DEL:
             if (idx > 0) {
                 idx--;
-                putch(ch);
+                putch(ASCII_BS);
+                putch(' ');
+                putch(ASCII_BS);
             }
             break;
         default:
@@ -279,6 +280,8 @@ void promptP(char *dest, uint8_t len, const char *prompt /* PROGMEM */) {
                 dest[idx] = ch;
                 idx++;
                 putch(ch);
+            } else {
+                putch(ASCII_BEL);
             }
             break;
         }
