@@ -1,14 +1,14 @@
-# ThinkPad E490 VRM Cooling Mod
+# ThinkPad E490/E590 VRM Cooling Mod
 
 - WIP
 - Only for IGP model
+- Maybe this mod also applicable to E480 and E580
 
 ## How to flash the microcontroller
 ### Set fuse bits
 
 ``` sh
-# internal 8MHz clock
-$ avrdude -c buspirate -P /dev/ttyUSB0 -p attiny85 -U lfuse:w:0xe2:m -U hfuse:w:0xdf:m -U efuse:w:0xff:m
+$ pio run -t fuses
 ```
 
 ### Calibrate internal oscillator
@@ -47,7 +47,7 @@ void loop() {
 ```
 
 ``` sh
-$ vi firmware/src/main.cpp
+$ vi firmware/src/main.c
 #define TUNED_OSCCAL     <CALIBRATED OSCCAL HERE>
 ```
 

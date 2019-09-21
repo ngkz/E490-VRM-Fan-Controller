@@ -1,0 +1,27 @@
+{
+  "build": {
+    "core": "tiny",
+    "extra_flags": "-DARDUINO_AVR_ATTINYX5",
+    "f_cpu": "125000L",
+    "mcu": "attiny85",
+    "variant": "tinyX5"
+  },
+  "frameworks": [
+    "arduino"
+  ],
+  "fuses": {
+    "efuse": "0xFF",
+    "hfuse": "0xD7",
+    "lfuse": "0xE2",
+    "lock": "0xFF"
+  },
+  "name": "ThinkPad E490 VRM Cooling Mod Fan Controller Board",
+  "upload": {
+    "extra_flags": "-e",
+    "maximum_ram_size": 512,
+    "maximum_size": 8192,
+    "protocol": "usbtiny"
+  },
+  "url": "https://github.com/ngkz/E490-VRM-Fan-Controller",
+  "vendor": "ngkz"
+}
