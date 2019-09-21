@@ -36,9 +36,7 @@ void reset_fan_control() {
 
 void fan_control_loop(int control_period) {
     uint16_t rpm = tachometer_capture(control_period);
-    if (trace) {
-        putu(rpm); putP(PSTR("RPM, "));
-    }
+    if (trace) putu(rpm);
 
     if (fg_wait_remain > 0) {
         if (fg_wait_remain > control_period) {
@@ -48,73 +46,67 @@ void fan_control_loop(int control_period) {
         }
 
         if (trace) {
-            putP(PSTR("fg_wait_remain = ")); putu(fg_wait_remain);
+            putch(','); putu(fg_wait_remain);
         }
 
         if (fg_wait_remain == 0) {
             // FG ready
             tachometer_start();
-            if (trace) putP(PSTR(", tach start"));
+            if (trace) putch('A');
         }
-
-        if (trace) putP(PSTR(", "));
     }
 
     uint8_t next_duty;
     int8_t temp = measure_temp();
     if (trace) {
-        putd(temp); putP(PSTR("C, "));
+        putch(','); putd(temp);
     }
 
     if (temp <= config.fan_stop_temp) {
         next_duty = 0;
-        if (trace) putP(PSTR("T <= fan_stop_temp"));
+        if (trace) putP(PSTR("B1"));
     } else if (config.fan_stop_temp < temp && temp < config.fan_start_temp) {
         if (duty == 0) {
             next_duty = 0;
-            if (trace) putP(PSTR("fan_stop_temp < T < fan_start_temp & fan off"));
+            if (trace) putP(PSTR("B2"));
         } else {
             next_duty = config.min_duty;
-            if (trace) putP(PSTR("fan_stop_temp < T < fan_start_temp & fan on"));
+            if (trace) putP(PSTR("B3"));
         }
     } else if (config.fan_start_temp <= temp && temp < config.fan_full_speed_temp) {
         next_duty = (uint8_t)roundf((float)(config.max_duty - config.min_duty) /
                                            (config.fan_full_speed_temp - config.fan_start_temp) *
                                                 (temp - config.fan_start_temp)) + config.min_duty;
-            if (trace) putP(PSTR("fan_start_temp < T < fan_full_speed_temp"));
+            if (trace) putP(PSTR("B4"));
     } else { //temp >= config.fan_full_speed_temp
         next_duty = config.max_duty;
-        if (trace) putP(PSTR("T >= fan_full_speed_temp"));
+        if (trace) putP(PSTR("B5"));
     }
-
-    if (trace) putP(PSTR(", "));
 
     // ensure fan runs at least startup duty when FG signal is indeterminate
     if (duty == 0 && next_duty > 0) {
         // fan startup
         fg_wait_remain = config.fg_delay;
-        if (trace) putP(PSTR("fan start, "));
+        if (trace) putP(PSTR("C"));
     }
 
     if (0 < next_duty && next_duty < config.startup_duty &&
             (fg_wait_remain > 0 /* FG not ready, tachometer stopped */ ||
              rpm < config.min_rpm /* fan stalled */)) {
         next_duty = config.startup_duty;
-        if (trace) putP(PSTR("fg not ready or fan stalled, "));
+        if (trace) putP(PSTR("D"));
     }
 
     if (duty > 0 && next_duty == 0) {
         // fan stop
         tachometer_stop();
-        if (trace) putP(PSTR("fan stop, "));
+        if (trace) putP(PSTR("E"));
     }
 
     set_fan_duty(next_duty);
     duty = next_duty;
 
-    if (trace) {
-        putP(PSTR("duty = ")); putuln(duty);
-    }
+    if (trace) putuln(duty);
 }
 
 void stop_fan_control() {

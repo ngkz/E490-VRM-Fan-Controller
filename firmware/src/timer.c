@@ -50,7 +50,7 @@ void start_timer() {
     // reset timer 0 prescaler
     GTCCR |= _BV(PSR0);
     // no force output compare match, start timer 0, 125kHz / 256 = 488.2Hz clock
-    TCCR0B = _BV(CS02) | _BV(CS00);
+    TCCR0B = _BV(CS02);
 }
 
 void stop_timer() {
