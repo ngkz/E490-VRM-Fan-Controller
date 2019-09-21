@@ -70,6 +70,7 @@ void putch(char ch) {
     uint8_t oldSREG = SREG;
     cli(); //Prevent interrupts from breaking the transmission.
     //it can either receive or send, not both (because receiving requires an interrupt and would stall transmission
+    uint8_t dummy1, dummy2;
     asm volatile(
         "   com %[ch]\n" // ones complement, carry set
         "1: brcc 2f\n"                     //^|
@@ -83,9 +84,10 @@ void putch(char ch) {
         "   lsr %[ch]\n"                   //^|
         "   dec %[bitcount]\n"             // | 4 cycles
         "   brne 1b\n"                     //_|
-        :
-        : [ch] "r" (ch),
-          [bitcount] "r" ((uint8_t)10),
+        : "=r" (dummy1),
+          "=r" (dummy2)
+        : [ch] "0" (ch),
+          [bitcount] "1" ((uint8_t)10),
           [port] "I" (_SFR_IO_ADDR(PORTB)),
           [pin] "I" (P_TX),
           [delaycount] "M"(ONEBIT_DELAY_COUNT)
@@ -98,6 +100,7 @@ void putch(char ch) {
 
 ISR(PCINT0_vect) {
     char ch;
+    uint8_t dummy;
     asm volatile(
         "1:   ldi r25, %[startbitdelay]\n"           //^| Get to 0.25 of start bit (our baud is too fast, so give room to correct)
         "2:   dec r25\n"                             // | ONEBIT_DELAY_COUNT / 4 * 3 cycles
@@ -113,8 +116,9 @@ ISR(PCINT0_vect) {
         "     ror  %[ch]\n"                          // |
         "     rjmp 3b\n"                             //_|
         "5:\n"
-        : [ch] "=&r" (ch)
-        : [count] "r" ((uint8_t)9),
+        : [ch] "=&r" (ch),
+          "=r" (dummy)
+        : [count] "1" ((uint8_t)9),
           [port] "I" (_SFR_IO_ADDR(PORTB)),
           [pin] "I" (P_RX),
           [onebitdelay] "M"(ONEBIT_DELAY_COUNT),
