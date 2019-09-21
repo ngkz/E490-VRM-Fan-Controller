@@ -74,9 +74,9 @@ void putch(char ch) {
     asm volatile(
         "   com %[ch]\n" // ones complement, carry set
         "1: brcc 2f\n"                     //^|
-        "   cbi %[port],%[pin]\n"          // |
+        "   cbi %[port],%[bit]\n"          // |
         "   rjmp 3f\n"                     // | 4 cycles
-        "2: sbi %[port],%[pin]\n"          // |
+        "2: sbi %[port],%[bit]\n"          // |
         "   nop\n"                         //_|
         "3: ldi r25, %[delaycount]\n "     //^|
         "4: dec r25\n"                     // | ONEBIT_DELAY_COUNT * 3 cycles
@@ -89,7 +89,7 @@ void putch(char ch) {
         : [ch] "0" (ch),
           [bitcount] "1" ((uint8_t)10),
           [port] "I" (_SFR_IO_ADDR(PORTB)),
-          [pin] "I" (P_TX),
+          [bit] "I" (P_TX),
           [delaycount] "M"(ONEBIT_DELAY_COUNT)
         : "r25"
     );
@@ -109,7 +109,7 @@ ISR(PCINT0_vect) {
         "4:   dec r25\n"                             // | ONEBIT_DELAY_COUNT * 3 cycles
         "     brne 4b\n"                             //_|
         "     clc\n"                                 //^|
-        "     sbic %[port], %[pin]\n"                // |
+        "     sbic %[pin], %[bit]\n"                // |
         "     sec\n"                                 // |
         "     dec  %[count]\n"                       // | 8 cycles
         "     breq 5f\n"                             // |
@@ -119,8 +119,8 @@ ISR(PCINT0_vect) {
         : [ch] "=&r" (ch),
           "=r" (dummy)
         : [count] "1" ((uint8_t)9),
-          [port] "I" (_SFR_IO_ADDR(PORTB)),
-          [pin] "I" (P_RX),
+          [pin] "I" (_SFR_IO_ADDR(PINB)),
+          [bit] "I" (P_RX),
           [onebitdelay] "M"(ONEBIT_DELAY_COUNT),
           [startbitdelay] "M"(ONEBIT_DELAY_COUNT/4)
         : "r25"
