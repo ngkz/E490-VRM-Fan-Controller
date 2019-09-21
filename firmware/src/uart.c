@@ -164,6 +164,7 @@ void init_uart() {
 }
 
 void putln() {
+    putch('\r');
     putch('\n');
 }
 
@@ -260,6 +261,7 @@ void promptP(char *dest, uint8_t len, const char *prompt /* PROGMEM */) {
         char ch = getch();
         switch(ch) {
         case '\r':
+            break;
         case '\n':
             if (len > 0) dest[idx] = 0;
             putln();
