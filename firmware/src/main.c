@@ -26,6 +26,7 @@
 #include "thermometer.h"
 #include "timer.h"
 #include "fancontrol.h"
+#include "asciichr.h"
 
 #define TUNED_OSCCAL 0x99
 
@@ -51,7 +52,8 @@ int main() {
 
     for (;;) {
         while (available_input() > 0) {
-            if (getch() == '\n') {
+            char ch = getch();
+            if (ch == ASCII_CR || ch == ASCII_LF) {
                 stop_fan_control();
                 stop_timer();
                 config_ui();
