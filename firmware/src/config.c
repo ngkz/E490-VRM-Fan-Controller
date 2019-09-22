@@ -149,7 +149,7 @@ static void show_information(const char *arg) {
 static void put_voltage_temperature(int16_t voltage, float temperature) {
     putu(voltage);
     putP(SPACE_PAREN);
-    putu(adc_value_to_mv(voltage));
+    putu(round(adc_value_to_mv(voltage)));
     putP(PSTR("mV) @ "));
     putf(temperature, 1);
     putchln('C');
