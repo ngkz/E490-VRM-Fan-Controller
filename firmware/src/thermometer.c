@@ -84,6 +84,10 @@ uint16_t adc_diode_voltage() {
     return voltage;
 }
 
+float adc_value_to_mv(float value) {
+    return value * 1100 /* 1.1v reference */ / 1024 /* 10bit */;
+}
+
 int8_t measure_temp() {
     return (int8_t)roundf((adc_diode_voltage() - config.zero_c_voltage) /
                            config.temperature_coefficient);

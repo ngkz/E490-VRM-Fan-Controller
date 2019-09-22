@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include <math.h>
 #include "uart.h"
 #include "thermometer.h"
 #include "fancontrol.h"
@@ -119,13 +120,13 @@ static void show_thermometer_config() {
     putP(PSTR("Voltage at 0C: "));
     putu(config.zero_c_voltage);
     putP(SPACE_PAREN);
-    putu(ADC_VALUE_TO_VOLTAGE(config.zero_c_voltage));
+    putu(adc_value_to_mv(config.zero_c_voltage));
     putPln(PSTR("mV)"));
 
     putP(PSTR("Temperature coefficient: "));
     putf(config.temperature_coefficient, 3);
     putP(SPACE_PAREN);
-    putf(ADC_VALUE_TO_VOLTAGE(config.temperature_coefficient), 3);
+    putf(adc_value_to_mv(config.temperature_coefficient), 3);
     putPln(PSTR("mV/C)"));
 }
 
@@ -147,7 +148,7 @@ static void show_information(const char *arg) {
 static void put_voltage_temperature(uint16_t voltage, float temperature) {
     putu(voltage);
     putP(SPACE_PAREN);
-    putu(ADC_VALUE_TO_VOLTAGE(voltage));
+    putu(adc_value_to_mv(voltage));
     putP(PSTR("mV) @ "));
     putf(temperature, 1);
     putchln('C');
@@ -170,8 +171,8 @@ static void calibrate_thermometer(const char *arg) {
 
     put_voltage_temperature(voltage_high, temperature_high);
 
-    float    temperature_coefficient = (voltage_high - voltage_low) / (temperature_high - temperature_low);
-    uint16_t zero_c_voltage = voltage_low - (temperature_low - 0) / temperature_coefficient;
+    float    temperature_coefficient = ((int16_t)voltage_high - (int16_t)voltage_low) / (temperature_high - temperature_low);
+    uint16_t zero_c_voltage = voltage_low - roundf((temperature_low - 0) / temperature_coefficient);
 
     config.temperature_coefficient = temperature_coefficient;
     config.zero_c_voltage = zero_c_voltage;

@@ -21,10 +21,9 @@
 
 #include <stdint.h>
 
-#define ADC_VALUE_TO_VOLTAGE(v) (v * 1100 / 1024) //1.1v reference, 10bit
-
 void init_thermometer();
 uint16_t adc_diode_voltage();
+float adc_value_to_mv(float value);
 int8_t measure_temp();
 
 #endif // __THERMOMETER_H_
