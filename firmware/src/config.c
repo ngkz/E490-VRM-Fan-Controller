@@ -29,8 +29,8 @@
 #include "fancontrol.h"
 
 struct Config config_EE EEMEM = {
-    .zero_c_voltage          = 0,
-    .temperature_coefficient = 0.0,
+    .zero_c_voltage          = 573.903,
+    .temperature_coefficient = -1.572,
     .min_duty                = 40,   // 25%
     .max_duty                = 159,  // 100%
     .startup_duty            = 48,   // 30%
@@ -119,9 +119,9 @@ static void save_config() {
 
 static void show_thermometer_config() {
     putP(PSTR("Voltage at 0C: "));
-    putu(config.zero_c_voltage);
+    putf(config.zero_c_voltage, 3);
     putP(SPACE_PAREN);
-    putu(adc_value_to_mv(config.zero_c_voltage));
+    putf(adc_value_to_mv(config.zero_c_voltage), 3);
     putPln(PSTR("mV)"));
 
     putP(PSTR("Temperature coefficient: "));
@@ -181,7 +181,7 @@ static void calibrate_thermometer(const char *arg) {
     put_voltage_temperature(voltage_high, temperature_high);
 
     float temperature_coefficient = (voltage_high - voltage_low) / (temperature_high - temperature_low);
-    uint16_t zero_c_voltage = voltage_low - roundf((temperature_low - 0) / temperature_coefficient);
+    float zero_c_voltage = voltage_low - (temperature_low - 0) / temperature_coefficient;
 
     config.temperature_coefficient = temperature_coefficient;
     config.zero_c_voltage = zero_c_voltage;

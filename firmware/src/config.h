@@ -22,7 +22,7 @@
 #include <stdint.h>
 
 struct Config {
-    uint16_t zero_c_voltage;
+    float    zero_c_voltage;
     float    temperature_coefficient;
     uint8_t  min_duty;
     uint8_t  max_duty;
