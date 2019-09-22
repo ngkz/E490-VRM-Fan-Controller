@@ -67,6 +67,7 @@ static void show_help(const char *arg);
 //avr-gcc doesn't merge duplicated PSTR constant :(
 static const char TEMPERATURE_PROMPT[] PROGMEM = "Input temperature: ";
 static const char SPACE_PAREN[] PROGMEM = " (";
+static const char CANCELLED[] PROGMEM = "cancelled";
 
 static const char INFO[] PROGMEM = "info";
 static const char CALIBRATE[] PROGMEM = "calibrate";
@@ -159,6 +160,10 @@ static void calibrate_thermometer(const char *arg) {
 
     putPln(PSTR("Cool the diode as much as possible."));
     promptP(buf, sizeof(buf), TEMPERATURE_PROMPT);
+    if (buf[0] == 0) {
+        putPln(CANCELLED);
+        return;
+    }
     float    temperature_low = (float)atof(buf);
     uint16_t voltage_low = adc_diode_voltage();
 
@@ -166,6 +171,10 @@ static void calibrate_thermometer(const char *arg) {
 
     putPln(PSTR("Heat the diode as much as possible."));
     promptP(buf, sizeof(buf), TEMPERATURE_PROMPT);
+    if (buf[0] == 0) {
+        putPln(CANCELLED);
+        return;
+    }
     float    temperature_high = (float)atof(buf);
     uint16_t voltage_high = adc_diode_voltage();
 
