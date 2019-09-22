@@ -75,7 +75,7 @@ static uint16_t adc() {
     return result_high << 8 | result_low;
 }
 
-uint16_t adc_diode_voltage() {
+int16_t adc_diode_voltage() {
     enable_adc();
     diode_on();
     uint16_t voltage = (adc() + adc() + adc()) / 3;

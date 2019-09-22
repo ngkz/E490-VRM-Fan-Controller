@@ -146,7 +146,7 @@ static void show_information(const char *arg) {
     putP(PSTR("FG Delay: ")); putu(config.fg_delay); putPln(PSTR("ms"));
 }
 
-static void put_voltage_temperature(uint16_t voltage, float temperature) {
+static void put_voltage_temperature(int16_t voltage, float temperature) {
     putu(voltage);
     putP(SPACE_PAREN);
     putu(adc_value_to_mv(voltage));
@@ -165,7 +165,7 @@ static void calibrate_thermometer(const char *arg) {
         return;
     }
     float    temperature_low = (float)atof(buf);
-    uint16_t voltage_low = adc_diode_voltage();
+    int16_t voltage_low = adc_diode_voltage();
 
     put_voltage_temperature(voltage_low, temperature_low);
 
@@ -176,11 +176,11 @@ static void calibrate_thermometer(const char *arg) {
         return;
     }
     float    temperature_high = (float)atof(buf);
-    uint16_t voltage_high = adc_diode_voltage();
+    int16_t voltage_high = adc_diode_voltage();
 
     put_voltage_temperature(voltage_high, temperature_high);
 
-    float    temperature_coefficient = ((int16_t)voltage_high - (int16_t)voltage_low) / (temperature_high - temperature_low);
+    float temperature_coefficient = (voltage_high - voltage_low) / (temperature_high - temperature_low);
     uint16_t zero_c_voltage = voltage_low - roundf((temperature_low - 0) / temperature_coefficient);
 
     config.temperature_coefficient = temperature_coefficient;
