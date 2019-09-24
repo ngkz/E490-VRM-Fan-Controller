@@ -51,7 +51,7 @@ void init_fan() {
     // no clear on compare match, turn off PWM A, disconnect timer comparator A from the output pin, stop the clock
     TCCR1 = 0;
     // turn on PWM B, disconnect PWM B from the output pin, no force output compare match, no timer 1 prescaler reset
-    GTCCR = (GTCCR | ~(_BV(PWM1B) | _BV(COM1B1) | _BV(COM1B0) | _BV(FOC1B) | _BV(FOC1A) | _BV(PSR1))) | _BV(PWM1B);
+    GTCCR = (GTCCR & ~(_BV(PWM1B) | _BV(COM1B1) | _BV(COM1B0) | _BV(FOC1B) | _BV(FOC1A) | _BV(PSR1))) | _BV(PWM1B);
     // reset the counter
     TCNT1 = 0;
     // reset output compare registers
