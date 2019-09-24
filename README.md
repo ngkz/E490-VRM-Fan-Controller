@@ -1,8 +1,8 @@
-# ThinkPad E490/E590 VRM Cooling Mod
+# ThinkPad E490 VRM Cooling Mod
 
 - WIP
 - Only for IGP model
-- Maybe this mod also applicable to E480 and E580
+- Maybe this mod also applicable to E590, E480, and E580
 
 ## How to flash the microcontroller
 ### Set fuse bits
