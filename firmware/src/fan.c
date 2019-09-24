@@ -81,13 +81,13 @@ void set_fan_duty(uint8_t duty) {
         // connect PWM B to OC1B, reset timer 1 prescaler
         GTCCR |= _BV(COM1B1) | _BV(PSR1);
         // start timer 1, 64MHz / 16 = 4MHz clock
-        TCCR1 |= _BV(CS12) | _BV(CS10);
+        TCCR1 |= _BV(CS12) | _BV(CS10) | _BV(COM1A1) /* workaround for ATTiny85 bug */;
     } else {
         // stop PWM
         // disconnect PWM B from OC1B
         GTCCR &= ~(_BV(COM1B1) | _BV(COM1B0));
         // stop timer 1
-        TCCR1 &= ~(_BV(CS13) | _BV(CS12) | _BV(CS11) | _BV(CS10));
+        TCCR1 &= ~(_BV(CS13) | _BV(CS12) | _BV(CS11) | _BV(CS10) | _BV(COM1A1) | _BV(COM1A0));
         power_timer1_disable();
 
         PORTB = (PORTB & ~_BV(P_PWM)) | (duty == 0 ? 0 : _BV(P_PWM));
