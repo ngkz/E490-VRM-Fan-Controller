@@ -181,7 +181,7 @@ static void calibrate_thermometer(const char *arg) {
     put_voltage_temperature(voltage_high, temperature_high);
 
     float temperature_coefficient = (voltage_high - voltage_low) / (temperature_high - temperature_low);
-    float zero_c_voltage = voltage_low - (temperature_low - 0) / temperature_coefficient;
+    float zero_c_voltage = voltage_low - temperature_coefficient * temperature_low;
 
     config.temperature_coefficient = temperature_coefficient;
     config.zero_c_voltage = zero_c_voltage;
