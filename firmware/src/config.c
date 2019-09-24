@@ -164,7 +164,7 @@ static void calibrate_thermometer(const char *arg) {
         putPln(CANCELLED);
         return;
     }
-    float    temperature_low = (float)atof(buf);
+    float temperature_low = (float)atof(buf);
     int16_t voltage_low = adc_diode_voltage();
 
     put_voltage_temperature(voltage_low, temperature_low);
@@ -175,7 +175,7 @@ static void calibrate_thermometer(const char *arg) {
         putPln(CANCELLED);
         return;
     }
-    float    temperature_high = (float)atof(buf);
+    float temperature_high = (float)atof(buf);
     int16_t voltage_high = adc_diode_voltage();
 
     put_voltage_temperature(voltage_high, temperature_high);
