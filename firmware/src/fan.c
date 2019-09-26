@@ -24,7 +24,7 @@
 #include "config.h"
 
 #define P_FG         PB2 //INT0
-#define P_PWM        PB4
+#define P_PWM        PB1 //OC1A
 
 static volatile uint8_t fg_pulse_count = 0;
 
@@ -34,7 +34,7 @@ void init_fan() {
     DDRB &= ~_BV(P_FG);   // FG input
     PORTB |= _BV(P_FG);   // pull-up FG
 
-#if P_PWM != PB4
+#if P_PWM != PB1
 #error "fix timer 1 configuration"
 #endif
 
@@ -48,10 +48,10 @@ void init_fan() {
     loop_until_bit_is_set(PLLCSR, PLOCK);
     // Use 64MHz PLL clock as timer 1 clock source
     PLLCSR |= PCKE;
-    // no clear on compare match, turn off PWM A, disconnect timer comparator A from the output pin, stop the clock
-    TCCR1 = 0;
-    // turn on PWM B, disconnect PWM B from the output pin, no force output compare match, no timer 1 prescaler reset
-    GTCCR = (GTCCR & ~(_BV(PWM1B) | _BV(COM1B1) | _BV(COM1B0) | _BV(FOC1B) | _BV(FOC1A) | _BV(PSR1))) | _BV(PWM1B);
+    // no clear on compare match, turn on PWM A, disconnect timer comparator A from the output pin, stop the clock
+    TCCR1 = _BV(PWM1A);
+    // turn off PWM B, disconnect PWM B from the output pin, no force output compare match, no timer 1 prescaler reset
+    GTCCR &= ~(_BV(PWM1B) | _BV(COM1B1) | _BV(COM1B0) | _BV(FOC1B) | _BV(FOC1A) | _BV(PSR1));
     // reset the counter
     TCNT1 = 0;
     // reset output compare registers
@@ -78,16 +78,14 @@ void set_fan_duty(uint8_t duty) {
         OCR1A = duty;
         // reset the counter
         TCNT1 = 0;
-        // connect PWM B to OC1B, reset timer 1 prescaler
-        GTCCR |= _BV(COM1B1) | _BV(PSR1);
-        // start timer 1, 64MHz / 16 = 4MHz clock
-        TCCR1 |= _BV(CS12) | _BV(CS10) | _BV(COM1A1) /* workaround for ATTiny85 bug */;
+        // reset timer 1 prescaler
+        GTCCR |= _BV(PSR1);
+        // connect PWM A to OC1A,  start timer 1, 64MHz / 16 = 4MHz clock
+        TCCR1 |= _BV(COM1A1) | _BV(CS12) | _BV(CS10);
     } else {
         // stop PWM
-        // disconnect PWM B from OC1B
-        GTCCR &= ~(_BV(COM1B1) | _BV(COM1B0));
-        // stop timer 1
-        TCCR1 &= ~(_BV(CS13) | _BV(CS12) | _BV(CS11) | _BV(CS10) | _BV(COM1A1) | _BV(COM1A0));
+        // disconnect PWM A from OC1A stop timer 1
+        TCCR1 &= ~(_BV(COM1A1) | _BV(COM1A0) | _BV(CS13) | _BV(CS12) | _BV(CS11) | _BV(CS10));
         power_timer1_disable();
 
         PORTB = (PORTB & ~_BV(P_PWM)) | (duty == 0 ? 0 : _BV(P_PWM));

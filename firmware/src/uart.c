@@ -58,7 +58,7 @@
 
 #define BAUD_RATE               2400
 #define P_TX                    PB0
-#define P_RX                    PB1
+#define P_RX                    PB4
 #define PCINT_RX                PCINT1
 #define SERIAL_BUFFER_SIZE      16
 #define ONEBIT_DELAY_COUNT      ((F_CPU/BAUD_RATE-8)/3)

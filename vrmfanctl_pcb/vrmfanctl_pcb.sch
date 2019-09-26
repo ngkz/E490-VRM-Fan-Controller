@@ -152,8 +152,6 @@ Text Notes 6100 2250 0    50   ~ 0
 V+(RED)
 Text Notes 6100 1850 0    50   ~ 0
 To Fan (KDB0305HA3-CD7)
-Text Label 5150 2200 0    50   ~ 0
-PWM
 Wire Wire Line
 	5700 2100 5850 2100
 Wire Wire Line
@@ -268,16 +266,8 @@ Wire Wire Line
 	5350 1350 5800 1350
 Text Label 5150 1800 0    50   ~ 0
 TX
-Text Label 5150 1900 0    50   ~ 0
+Text Label 5150 2200 0    50   ~ 0
 RX
-Wire Wire Line
-	5100 1900 5450 1900
-Wire Wire Line
-	5450 1900 5450 1450
-Wire Wire Line
-	5450 1450 5800 1450
-Wire Wire Line
-	5850 1900 5500 1900
 Text Notes 6050 2800 0    50   ~ 0
 To temperature sensor diode
 Text Label 5150 2100 0    50   ~ 0
@@ -311,15 +301,9 @@ F 3 "~" H 6000 2850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5500 2200 5400 2200
-Wire Wire Line
-	5400 2200 5100 2200
-Wire Wire Line
 	5400 2100 5100 2100
 Wire Wire Line
 	5400 2100 5400 2850
-Wire Wire Line
-	5500 1900 5500 2200
 $Comp
 L Connector:Conn_01x04_Female J4
 U 1 1 5D5F6860
@@ -331,6 +315,15 @@ F 3 "~" H 6050 2000 50  0001 C CNN
 	1    6050 2000
 	1    0    0    -1  
 $EndComp
+Wire Wire Line
+	5100 2000 5850 2000
+Text Label 5150 2000 0    50   ~ 0
+FG
+NoConn ~ 5100 2300
+Text Label 5150 1900 0    50   ~ 0
+PWM
+Wire Wire Line
+	5100 1900 5850 1900
 $Comp
 L MCU_Microchip_ATtiny:ATtiny85-20PU U1
 U 1 1 5D2BE157
@@ -343,19 +336,43 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/atmel-2586-avr-8-bit-microc
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5100 2000 5850 2000
-Text Label 5150 2000 0    50   ~ 0
-FG
+	5100 2200 5450 2200
+Wire Wire Line
+	5450 2200 5450 1450
+Wire Wire Line
+	5450 1450 5800 1450
 $Comp
-L Connector_Generic:Conn_01x03 J2
-U 1 1 5D6F20BE
+L power:GND #PWR0103
+U 1 1 5D8DD390
+P 6400 1600
+F 0 "#PWR0103" H 6400 1350 50  0001 C CNN
+F 1 "GND" H 6405 1427 50  0000 C CNN
+F 2 "" H 6400 1600 50  0001 C CNN
+F 3 "" H 6400 1600 50  0001 C CNN
+	1    6400 1600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6400 1600 6400 1550
+Wire Wire Line
+	6400 1550 6300 1550
+Wire Wire Line
+	6300 1450 6400 1450
+Wire Wire Line
+	6300 1350 6400 1350
+Text Label 6300 1350 0    50   ~ 0
+TX
+Text Label 6300 1450 0    50   ~ 0
+RX
+$Comp
+L Connector_Generic:Conn_02x03_Odd_Even J2
+U 1 1 5D8E20EB
 P 6000 1450
-F 0 "J2" H 6080 1492 50  0000 L CNN
-F 1 "Through Hole" H 6080 1401 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 6000 1450 50  0001 C CNN
+F 0 "J2" H 6050 1767 50  0000 C CNN
+F 1 "Conn_02x03_Odd_Even" H 6050 1676 50  0000 C CNN
+F 2 "" H 6000 1450 50  0001 C CNN
 F 3 "~" H 6000 1450 50  0001 C CNN
 	1    6000 1450
 	1    0    0    -1  
 $EndComp
-NoConn ~ 5100 2300
 $EndSCHEMATC
