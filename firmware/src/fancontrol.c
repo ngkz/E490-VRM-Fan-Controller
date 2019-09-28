@@ -106,7 +106,10 @@ void fan_control_loop(int control_period) {
     set_fan_duty(next_duty);
     duty = next_duty;
 
-    if (trace) putuln(duty);
+    if (trace) {
+        putch(',');
+        putuln(duty);
+    }
 }
 
 void stop_fan_control() {
