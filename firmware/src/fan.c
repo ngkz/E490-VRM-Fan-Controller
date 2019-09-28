@@ -61,7 +61,7 @@ void init_fan() {
     MCUCR |= _BV(ISC01) | _BV(ISC00);
 }
 
-//duty: 0-OCR1C+1(10)
+//duty: 0-OCR1C
 void set_fan_duty(uint8_t duty) {
     if (duty > 0 && duty < OCR1C) {
         // start PWM
