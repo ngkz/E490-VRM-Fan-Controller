@@ -28,6 +28,8 @@
 #include "thermometer.h"
 #include "fancontrol.h"
 #include "fan.h"
+#include "timer.h"
+#include "asciichr.h"
 
 struct Config config_EE EEMEM = {
     .zero_c_voltage          = 572.571,
@@ -246,6 +248,27 @@ static void toggle_trace(const char *arg) {
 
 static void fantest(const char *arg) {
     set_fan_duty(atoi(arg));
+    start_timer();
+    tachometer_start();
+
+    for (;;) {
+        if (is_timer_elapsed()) {
+            clear_elapsed_flag();
+            uint16_t rpm = tachometer_capture(TICK);
+            putuln(rpm);
+        }
+
+        if (available_input() > 0) {
+            char ch = getch();
+            if (ch == ASCII_CR || ch == ASCII_LF) {
+                break;
+            }
+        }
+    }
+
+    tachometer_stop();
+    stop_timer();
+    set_fan_duty(0);
 }
 
 static void show_help(const char *arg) {
