@@ -56,7 +56,7 @@
 #include "uart.h"
 #include "asciichr.h"
 
-#define BAUD_RATE               2400
+#define BAUD_RATE               4800
 #define P_TX                    PB0
 #define P_RX                    PB4
 #define PCINT_RX                PCINT4
