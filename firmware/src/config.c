@@ -27,6 +27,7 @@
 #include "uart.h"
 #include "thermometer.h"
 #include "fancontrol.h"
+#include "fan.h"
 
 struct Config config_EE EEMEM = {
     .zero_c_voltage          = 572.571,
@@ -62,6 +63,7 @@ static void set_pulse_per_revolution(const char *arg);
 static void set_min_rpm(const char *arg);
 static void set_fg_delay(const char *arg);
 static void toggle_trace(const char *arg);
+static void fantest(const char *arg);
 static void show_help(const char *arg);
 
 //avr-gcc doesn't merge duplicated PSTR constant :(
@@ -81,6 +83,7 @@ static const char PULSE_PER_REVOLUTION[] PROGMEM = "pulse_per_revolution";
 static const char MIN_RPM[] PROGMEM = "min_rpm";
 static const char FG_DELAY[] PROGMEM = "fg_delay";
 static const char TRACE[] PROGMEM = "trace";
+static const char FANTEST[] PROGMEM = "fantest";
 static const char HELP[] PROGMEM = "help";
 static const char EXIT[] PROGMEM = "exit";
 
@@ -97,6 +100,7 @@ static const struct Command commands[] PROGMEM = {
     {MIN_RPM,                 1, set_min_rpm},
     {FG_DELAY,                1, set_fg_delay},
     {TRACE,                   0, toggle_trace},
+    {FANTEST,                 1, fantest},
     {HELP,                    0, show_help},
     {EXIT,                    0, NULL},
 };
@@ -238,6 +242,10 @@ static void set_fg_delay(const char *arg) {
 
 static void toggle_trace(const char *arg) {
     toggle_fan_control_trace();
+}
+
+static void fantest(const char *arg) {
+    set_fan_duty(atoi(arg));
 }
 
 static void show_help(const char *arg) {
