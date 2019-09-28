@@ -39,15 +39,6 @@ void init_fan() {
 #endif
 
     // timer 1 configuration
-    // asynchronous mode
-    // enable PLL
-    PLLCSR |= _BV(PLLE);
-    // wait 100us for PLL to stabilize
-    _delay_us(100);
-    // wait for PLL to lock
-    loop_until_bit_is_set(PLLCSR, PLOCK);
-    // Use 64MHz PLL clock as timer 1 clock source
-    PLLCSR |= PCKE;
     // no clear on compare match, turn on PWM A, disconnect timer comparator A from the output pin, stop the clock
     TCCR1 = _BV(PWM1A);
     // turn off PWM B, disconnect PWM B from the output pin, no force output compare match, no timer 1 prescaler reset
@@ -57,8 +48,8 @@ void init_fan() {
     // reset output compare registers
     OCR1A = 0;
     OCR1B = 0;
-    // PWM freqency 4MHz(Timer 1 clock) / (159 + 1) = 25kHz, setFanDuty() configures the clock.
-    OCR1C = 159;
+    // PWM freqency 250kHz(Timer 1 clock) / (9 + 1) = 25kHz, setFanDuty() configures the clock.
+    OCR1C = 9;
     // disable all Timer1 interrupts
     TIMSK &= ~(_BV(OCIE1A) | _BV(OCIE1B) | _BV(TOIE1));
     // clear the Timer1 interrupt flags
@@ -70,6 +61,7 @@ void init_fan() {
     MCUCR |= _BV(ISC01) | _BV(ISC00);
 }
 
+//duty: 0-OCR1C+1(10)
 void set_fan_duty(uint8_t duty) {
     if (duty > 0 && duty < OCR1C) {
         // start PWM
@@ -80,8 +72,8 @@ void set_fan_duty(uint8_t duty) {
         TCNT1 = 0;
         // reset timer 1 prescaler
         GTCCR |= _BV(PSR1);
-        // connect PWM A to OC1A,  start timer 1, 64MHz / 16 = 4MHz clock
-        TCCR1 |= _BV(COM1A1) | _BV(CS12) | _BV(CS10);
+        // connect PWM A to OC1A,  start timer 1, 250kHz clock
+        TCCR1 |= _BV(COM1A1) | _BV(CS10);
     } else {
         // stop PWM
         // disconnect PWM A from OC1A stop timer 1

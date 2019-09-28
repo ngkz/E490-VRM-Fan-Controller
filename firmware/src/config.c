@@ -29,11 +29,11 @@
 #include "fancontrol.h"
 
 struct Config config_EE EEMEM = {
-    .zero_c_voltage          = 573.903,
-    .temperature_coefficient = -1.572,
-    .min_duty                = 40,   // 25%
-    .max_duty                = 159,  // 100%
-    .startup_duty            = 48,   // 30%
+    .zero_c_voltage          = 572.571,
+    .temperature_coefficient = -1.540,
+    .min_duty                = 3,   // 30%(25%)
+    .max_duty                = 10,  // 100%
+    .startup_duty            = 3,   // 30%
     .fan_start_temp          = 45,   // C
     .fan_full_speed_temp     = 70,   // C
     .fan_stop_temp           = 40,   // C

@@ -32,7 +32,7 @@
 
 int main() {
     // decrease clock speed
-    clock_prescale_set(clock_div_64); // 8MHz / 64 = 125kHz
+    clock_prescale_set(clock_div_32); // 8MHz / 32 = 250kHz
 
     // calibrate internal oscillator
     OSCCAL = TUNED_OSCCAL;

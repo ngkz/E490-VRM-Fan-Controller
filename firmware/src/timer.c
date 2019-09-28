@@ -30,7 +30,7 @@ void init_timer() {
     // reset counter
     TCNT0 = 0;
     // 500ms period
-    OCR0A = 244;
+    OCR0A = 121;
     OCR0B = 0;
     // no force output compare match, timer 0 stopped
     TCCR0B = 0;
@@ -49,8 +49,8 @@ void start_timer() {
     TCNT0 = 0;
     // reset timer 0 prescaler
     GTCCR |= _BV(PSR0);
-    // no force output compare match, start timer 0, 125kHz / 256 = 488.2Hz clock
-    TCCR0B = _BV(CS02);
+    // no force output compare match, start timer 0, 250kHz / 256 = 244.1Hz clock
+    TCCR0B = _BV(CS02) | _BV(CS00);
 }
 
 void stop_timer() {
