@@ -44,6 +44,10 @@ int main() {
     init_timer();
     start_timer();
 
+    //pull-up unused pin
+    DDRB &= ~_BV(PB2);
+    PORTB |= _BV(PB2);
+
     power_usi_disable();
 
     sei();

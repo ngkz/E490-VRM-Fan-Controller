@@ -17,13 +17,10 @@
  */
 
 #include <avr/io.h>
-#include <avr/interrupt.h>
 #include <avr/power.h>
 #include <util/delay.h>
 #include "fan.h"
-#include "config.h"
 
-#define P_FG         PB2 //INT0
 #define P_PWM        PB1 //OC1A
 
 static volatile uint8_t fg_pulse_count = 0;
@@ -31,8 +28,6 @@ static volatile uint8_t fg_pulse_count = 0;
 void init_fan() {
     DDRB |= _BV(P_PWM);   // PWM out
     PORTB &= ~_BV(P_PWM); // PWM low
-    DDRB &= ~_BV(P_FG);   // FG input
-    PORTB |= _BV(P_FG);   // pull-up FG
 
 #if P_PWM != PB1
 #error "fix timer 1 configuration"
@@ -56,9 +51,6 @@ void init_fan() {
     TIFR |= _BV(OCF1A) | _BV(OCF1B) | _BV(TOV1);
 
     power_timer1_disable();
-
-    // the rising edge of FG(INT0) generates an INT0 interrupt
-    MCUCR |= _BV(ISC01) | _BV(ISC00);
 }
 
 //duty: 0-OCR1C
@@ -82,26 +74,4 @@ void set_fan_duty(uint8_t duty) {
 
         PORTB = (PORTB & ~_BV(P_PWM)) | (duty == 0 ? 0 : _BV(P_PWM));
     }
-}
-
-void tachometer_start() {
-    // enable INT0 interrupt
-    fg_pulse_count = 0;
-    GIFR |= _BV(INTF0);
-    GIMSK |= _BV(INT0);
-}
-
-void tachometer_stop() {
-    // disable INT0 interrupt
-    GIMSK &= ~_BV(INT0);
-}
-
-ISR(INT0_vect) {
-    fg_pulse_count++;
-}
-
-uint16_t tachometer_capture(int capture_period) {
-    uint16_t rpm = fg_pulse_count / config.pulse_per_revolution * 60000 / capture_period;
-    fg_pulse_count = 0;
-    return rpm;
 }
