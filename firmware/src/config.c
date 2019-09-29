@@ -31,15 +31,6 @@
 struct Config config_EE EEMEM = {
     .zero_c_voltage          = 572.571,
     .temperature_coefficient = -1.540,
-    .min_duty                = 3,   // 30%(25%)
-    .max_duty                = 10,  // 100%
-    .startup_duty            = 3,   // 30%
-    .fan_start_temp          = 45,   // C
-    .fan_full_speed_temp     = 70,   // C
-    .fan_stop_temp           = 40,   // C
-    .pulse_per_revolution    = 2,
-    .min_rpm                 = 1000,
-    .fg_delay                = 1000, // ms
 };
 
 struct Config config;
@@ -52,15 +43,6 @@ struct Command {
 
 static void show_information(const char *arg);
 static void calibrate_thermometer(const char *arg);
-static void set_min_duty(const char *arg);
-static void set_max_duty(const char *arg);
-static void set_startup_duty(const char *arg);
-static void set_fan_start_temp(const char *arg);
-static void set_fan_full_speed_temp(const char *arg);
-static void set_fan_stop_temp(const char *arg);
-static void set_pulse_per_revolution(const char *arg);
-static void set_min_rpm(const char *arg);
-static void set_fg_delay(const char *arg);
 static void toggle_trace(const char *arg);
 static void show_help(const char *arg);
 
@@ -71,15 +53,6 @@ static const char CANCELLED[] PROGMEM = "cancelled";
 
 static const char INFO[] PROGMEM = "info";
 static const char CALIBRATE[] PROGMEM = "calibrate";
-static const char MIN_DUTY[] PROGMEM = "min_duty";
-static const char MAX_DUTY[] PROGMEM = "max_duty";
-static const char STARTUP_DUTY[] PROGMEM = "startup_duty";
-static const char FAN_START_TEMP[] PROGMEM = "fan_start_temp";
-static const char FAN_FULL_SPEED_TEMP[] PROGMEM = "fan_full_speed_temp";
-static const char FAN_STOP_TEMP[] PROGMEM = "fan_stop_temp";
-static const char PULSE_PER_REVOLUTION[] PROGMEM = "pulse_per_revolution";
-static const char MIN_RPM[] PROGMEM = "min_rpm";
-static const char FG_DELAY[] PROGMEM = "fg_delay";
 static const char TRACE[] PROGMEM = "trace";
 static const char HELP[] PROGMEM = "help";
 static const char EXIT[] PROGMEM = "exit";
@@ -87,15 +60,6 @@ static const char EXIT[] PROGMEM = "exit";
 static const struct Command commands[] PROGMEM = {
     {INFO,                    0, show_information},
     {CALIBRATE,               0, calibrate_thermometer},
-    {MIN_DUTY,                1, set_min_duty},
-    {MAX_DUTY,                1, set_max_duty},
-    {STARTUP_DUTY,            1, set_startup_duty},
-    {FAN_START_TEMP,          1, set_fan_start_temp},
-    {FAN_FULL_SPEED_TEMP,     1, set_fan_full_speed_temp},
-    {FAN_STOP_TEMP,           1, set_fan_stop_temp},
-    {PULSE_PER_REVOLUTION,    1, set_pulse_per_revolution},
-    {MIN_RPM,                 1, set_min_rpm},
-    {FG_DELAY,                1, set_fg_delay},
     {TRACE,                   0, toggle_trace},
     {HELP,                    0, show_help},
     {EXIT,                    0, NULL},
@@ -135,15 +99,6 @@ static void show_information(const char *arg) {
     putP(PSTR("Temp: ")); putd(measure_temp()); putchln('C');
     putPln(PSTR("---"));
     show_thermometer_config();
-    putP(PSTR("Min duty: ")); putuln(config.min_duty);
-    putP(PSTR("Max duty: ")); putuln(config.max_duty);
-    putP(PSTR("Startup duty: ")); putuln(config.startup_duty);
-    putP(PSTR("Fan start temp: ")); putd(config.fan_start_temp); putchln('C');
-    putP(PSTR("Fan full speed temp: ")); putd(config.fan_full_speed_temp); putchln('C');
-    putP(PSTR("Fan stop temp: ")); putd(config.fan_stop_temp); putchln('C');
-    putP(PSTR("Pulse per revolution: ")); putuln(config.pulse_per_revolution);
-    putP(PSTR("Min RPM: ")); putu(config.min_rpm); putPln(PSTR("rpm"));
-    putP(PSTR("FG Delay: ")); putu(config.fg_delay); putPln(PSTR("ms"));
 }
 
 static void put_voltage_temperature(int16_t voltage, float temperature) {
@@ -188,52 +143,6 @@ static void calibrate_thermometer(const char *arg) {
     save_config();
 
     show_thermometer_config();
-}
-
-static void set_uint8(uint8_t *dest, const char *arg) {
-    *dest = atoi(arg);
-    save_config();
-}
-
-static void set_uint16(uint16_t *dest, const char *arg) {
-    *dest = atoi(arg);
-    save_config();
-}
-
-static void set_min_duty(const char *arg) {
-    set_uint8(&config.min_duty, arg);
-}
-
-static void set_max_duty(const char *arg) {
-    set_uint8(&config.max_duty, arg);
-}
-
-static void set_startup_duty(const char *arg) {
-    set_uint8(&config.startup_duty, arg);
-}
-
-static void set_fan_start_temp(const char *arg) {
-    set_uint8((uint8_t *)&config.fan_start_temp, arg);
-}
-
-static void set_fan_full_speed_temp(const char *arg) {
-    set_uint8((uint8_t *)&config.fan_full_speed_temp, arg);
-}
-
-static void set_fan_stop_temp(const char *arg) {
-    set_uint8((uint8_t *)&config.fan_stop_temp, arg);
-}
-
-static void set_pulse_per_revolution(const char *arg) {
-    set_uint8(&config.pulse_per_revolution, arg);
-}
-
-static void set_min_rpm(const char *arg) {
-    set_uint16(&config.min_rpm, arg);
-}
-
-static void set_fg_delay(const char *arg) {
-    set_uint16(&config.fg_delay, arg);
 }
 
 static void toggle_trace(const char *arg) {

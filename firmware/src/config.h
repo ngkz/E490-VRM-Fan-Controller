@@ -24,15 +24,6 @@
 struct Config {
     float    zero_c_voltage;
     float    temperature_coefficient;
-    uint8_t  min_duty;
-    uint8_t  max_duty;
-    uint8_t  startup_duty;
-    int8_t   fan_start_temp;
-    int8_t   fan_full_speed_temp;
-    int8_t   fan_stop_temp;
-    uint8_t  pulse_per_revolution;
-    uint16_t min_rpm;
-    uint16_t fg_delay;
 };
 
 extern struct Config config;
