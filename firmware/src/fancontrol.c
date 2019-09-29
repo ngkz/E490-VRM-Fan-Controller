@@ -25,96 +25,69 @@
 #include "thermometer.h"
 #include "uart.h"
 
-static uint8_t duty;
-static uint16_t fg_wait_remain;
+static uint8_t current_level_idx;
 static bool trace;
 
+struct level {
+    uint8_t duty;
+    int8_t lower_limit;
+    int8_t upper_limit;
+};
+
+static const struct level fan_control_table[] = {
+    {0, 0,  44},
+    {3, 40, 47},
+    {4, 43, 51},
+    {5, 47, 54},
+    {6, 50, 57},
+    {7, 53, 60},
+    {8, 56, 64},
+    {9, 60, 99},
+};
+#define N_FAN_CONTROL_LEVELS (sizeof(fan_control_table) / sizeof(fan_control_table[0]))
+
 void reset_fan_control() {
-    duty = 0;
-    fg_wait_remain = 0;
+    current_level_idx = 0;
 }
 
 void fan_control_loop(int control_period) {
-    uint16_t rpm = tachometer_capture(control_period);
-    if (trace) putu(rpm);
-
-    if (fg_wait_remain > 0) {
-        if (fg_wait_remain > control_period) {
-            fg_wait_remain -= control_period;
-        } else {
-            fg_wait_remain = 0;
-        }
-
-        if (trace) {
-            putch(','); putu(fg_wait_remain);
-        }
-
-        if (fg_wait_remain == 0) {
-            // FG ready
-            tachometer_start();
-            if (trace) putch('A');
-        }
-    }
-
-    uint8_t next_duty;
     int8_t temp = measure_temp();
     if (trace) {
-        putch(','); putd(temp);
+        putP(PSTR("T=")); putd(temp);
     }
 
-    if (temp <= config.fan_stop_temp) {
-        next_duty = 0;
-        if (trace) putP(PSTR("B1"));
-    } else if (config.fan_stop_temp < temp && temp < config.fan_start_temp) {
-        if (duty == 0) {
-            next_duty = 0;
-            if (trace) putP(PSTR("B2"));
-        } else {
-            next_duty = config.min_duty;
-            if (trace) putP(PSTR("B3"));
+    const struct level *current_level = &fan_control_table[current_level_idx];
+    while (current_level_idx > 0 && temp < current_level->lower_limit) {
+        if (trace) {
+            putP(PSTR(" T<")); putd(current_level->lower_limit);
         }
-    } else if (config.fan_start_temp <= temp && temp < config.fan_full_speed_temp) {
-        next_duty = (uint8_t)roundf((float)(config.max_duty - config.min_duty) /
-                                           (config.fan_full_speed_temp - config.fan_start_temp) *
-                                                (temp - config.fan_start_temp)) + config.min_duty;
-            if (trace) putP(PSTR("B4"));
-    } else { //temp >= config.fan_full_speed_temp
-        next_duty = config.max_duty;
-        if (trace) putP(PSTR("B5"));
+        current_level--;
+        current_level_idx--;
+        if (trace) {
+            putP(PSTR(" lvl=")); putu(current_level_idx);
+        }
     }
 
-    // ensure fan runs at least startup duty when FG signal is indeterminate
-    if (duty == 0 && next_duty > 0) {
-        // fan startup
-        fg_wait_remain = config.fg_delay;
-        if (trace) putP(PSTR("C"));
+    while (current_level_idx + 1 < N_FAN_CONTROL_LEVELS && temp > current_level->upper_limit) {
+        if (trace) {
+            putP(PSTR(" T>")); putd(current_level->upper_limit);
+        }
+        current_level++;
+        current_level_idx++;
+        if (trace) {
+            putP(PSTR(" lvl=")); putu(current_level_idx);
+        }
     }
 
-    if (0 < next_duty && next_duty < config.startup_duty &&
-            (fg_wait_remain > 0 /* FG not ready, tachometer stopped */ ||
-             rpm < config.min_rpm /* fan stalled */)) {
-        next_duty = config.startup_duty;
-        if (trace) putP(PSTR("D"));
-    }
-
-    if (duty > 0 && next_duty == 0) {
-        // fan stop
-        tachometer_stop();
-        if (trace) putP(PSTR("E"));
-    }
-
-    set_fan_duty(next_duty);
-    duty = next_duty;
+    set_fan_duty(current_level->duty);
 
     if (trace) {
-        putch(',');
-        putuln(duty);
+        putP(PSTR(" duty=")); putuln(current_level->duty);
     }
 }
 
 void stop_fan_control() {
     set_fan_duty(0);
-    tachometer_stop();
 }
 
 void toggle_fan_control_trace() {
