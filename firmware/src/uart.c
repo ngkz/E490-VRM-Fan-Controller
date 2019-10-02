@@ -50,24 +50,20 @@
   Modified 23 November 2006 by David A. Mellis
  */
 
+#include <stdio.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/pgmspace.h>
 #include "uart.h"
-#include "asciichr.h"
 
 #define BAUD_RATE               4800
-#define P_TX                    PB0
-#define P_RX                    PB4
-#define PCINT_RX                PCINT4
-#define SERIAL_BUFFER_SIZE      16
+#define P_TX                    PB5
 #define ONEBIT_DELAY_COUNT      ((F_CPU/BAUD_RATE-8)/3)
 
-static char rxbuf [SERIAL_BUFFER_SIZE];
-static volatile uint8_t rxbuf_head;
-static uint8_t rxbuf_tail;
+static int uart_putchar(char c, FILE *stream);
 
-void putch(char ch) {
+static FILE uart_stdout = FDEV_SETUP_STREAM(uart_putchar, NULL, _FDEV_SETUP_WRITE);
+
+static void putch(char ch) {
     uint8_t oldSREG = SREG;
     cli(); //Prevent interrupts from breaking the transmission.
     //it can either receive or send, not both (because receiving requires an interrupt and would stall transmission
@@ -99,191 +95,15 @@ void putch(char ch) {
     return;
 }
 
-ISR(PCINT0_vect) {
-    char ch;
-    uint8_t dummy;
-    asm volatile(
-        "1:   ldi r25, %[startbitdelay]\n"           //^| Get to 0.25 of start bit (our baud is too fast, so give room to correct)
-        "2:   dec r25\n"                             // | ONEBIT_DELAY_COUNT / 4 * 3 cycles
-        "     brne 2b\n"                             //_|
-        "3:   ldi r25, %[onebitdelay]\n"             //^|
-        "4:   dec r25\n"                             // | ONEBIT_DELAY_COUNT * 3 cycles
-        "     brne 4b\n"                             //_|
-        "     clc\n"                                 //^|
-        "     sbic %[pin], %[bit]\n"                // |
-        "     sec\n"                                 // |
-        "     dec  %[count]\n"                       // | 8 cycles
-        "     breq 5f\n"                             // |
-        "     ror  %[ch]\n"                          // |
-        "     rjmp 3b\n"                             //_|
-        "5:\n"
-        : [ch] "=&r" (ch),
-          "=r" (dummy)
-        : [count] "1" ((uint8_t)9),
-          [pin] "I" (_SFR_IO_ADDR(PINB)),
-          [bit] "I" (P_RX),
-          [onebitdelay] "M"(ONEBIT_DELAY_COUNT),
-          [startbitdelay] "M"(ONEBIT_DELAY_COUNT/4)
-        : "r25"
-    );
-
-    // store the received character into ring buffer
-    uint8_t i = (rxbuf_head + 1) % SERIAL_BUFFER_SIZE;
-    if (i != rxbuf_tail) {
-        rxbuf[rxbuf_head] = ch;
-        rxbuf_head = i;
-    }
-
-    // clear the interrupt flag
-    GIFR |= _BV(PCIF);
+static int uart_putchar(char c, FILE *stream) {
+    putch(c);
+    return 0;
 }
 
-char getch() {
-    while (rxbuf_head == rxbuf_tail);
-
-    char c = rxbuf[rxbuf_tail];
-    rxbuf_tail = (rxbuf_tail + 1) % SERIAL_BUFFER_SIZE;
-
-    return c;
-}
-
-uint8_t available_input() {
-    return (SERIAL_BUFFER_SIZE + rxbuf_head - rxbuf_tail) % SERIAL_BUFFER_SIZE;
-}
-
-void init_uart() {
+void init_uart(void) {
     //TX output, high
     PORTB |= _BV(P_TX);
     DDRB |= _BV(P_TX);
-    //RX input, pull-up
-    DDRB &= ~_BV(P_RX); //RX input
-    PORTB |= _BV(P_RX); //pull-up RX
 
-    // RX level change generates a pin chage interrupt
-    PCMSK = _BV(PCINT_RX);
-    GIMSK |= _BV(PCIE);
-}
-
-void putln() {
-    putch('\r');
-    putch('\n');
-}
-
-void putchln(char ch) {
-    putch(ch);
-    putln();
-}
-
-void putP(const char *str /* PROGMEM */) {
-    for (;;) {
-        char ch = pgm_read_byte(str++);
-        if (!ch) break;
-        putch(ch);
-    }
-}
-
-void putPln(const char *str /* PROGMEM */) {
-    putP(str);
-    putln();
-}
-
-void put(const char *str) {
-    while (*str) putch(*str++);
-}
-
-void putd(int32_t number) {
-    if (number < 0) {
-        putch('-');
-        number = -number;
-    }
-
-    putu(number);
-}
-
-void putu(uint32_t number) {
-    char buf[10 + 1];
-    char *str = &buf[sizeof(buf) - 1];
-
-    *str = '\0';
-
-    do {
-        *--str = '0' + number % 10;
-        number /= 10;
-    } while(number);
-
-    put(str);
-}
-
-void putuln(uint32_t val) {
-    putu(val);
-    putln();
-}
-
-void putf(float number, uint8_t digits) {
-    // Handle negative numbers
-    if (number < 0.0) {
-         putch('-');
-         number = -number;
-    }
-
-    // Round correctly so that print(1.999, 2) prints as "2.00"
-    float rounding = 0.5;
-    for (uint8_t i=0; i<digits; ++i) {
-        rounding /= 10.0;
-    }
-
-    number += rounding;
-
-    // Extract the integer part of the number and print it
-    unsigned long int_part = (unsigned long)number;
-    float remainder = number - (float)int_part;
-    putu(int_part);
-
-    // Print the decimal point, but only if there are digits beyond
-    if (digits > 0) {
-        putch('.');
-    }
-
-    // Extract digits from the remainder one at a time
-    while (digits-- > 0) {
-        remainder *= 10.0;
-        int toPrint = (int)remainder;
-        putu(toPrint);
-        remainder -= toPrint;
-    }
-}
-
-void promptP(char *dest, uint8_t len, const char *prompt /* PROGMEM */) {
-    putP(prompt);
-
-    size_t idx = 0;
-
-    for (;;) {
-        char ch = getch();
-        switch(ch) {
-        case ASCII_CR:
-        case ASCII_LF:
-            if (len > 0) dest[idx] = 0;
-            putln();
-            return;
-        case ASCII_BS:
-        case ASCII_DEL:
-            if (idx > 0) {
-                idx--;
-                putch(ASCII_BS);
-                putch(' ');
-                putch(ASCII_BS);
-            }
-            break;
-        default:
-            if (idx + 1 < len) {
-                dest[idx] = ch;
-                idx++;
-                putch(ch);
-            } else {
-                putch(ASCII_BEL);
-            }
-            break;
-        }
-    }
+    stdout = &uart_stdout;
 }

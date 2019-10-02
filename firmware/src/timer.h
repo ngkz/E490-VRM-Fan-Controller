@@ -21,12 +21,8 @@
 
 #include <stdbool.h>
 
-#define TICK 500 //[ms]
-
-void init_timer();
-void start_timer();
-void stop_timer();
-bool is_timer_elapsed();
-void clear_elapsed_flag();
+void init_timer(void);
+bool is_timer_elapsed(void);
+void clear_elapsed_flag(void);
 
 #endif // __TIMER_H_

@@ -18,14 +18,11 @@
 
 #include <avr/io.h>
 #include <avr/power.h>
-#include <util/delay.h>
 #include "fan.h"
 
 #define P_PWM        PB1 //OC1A
 
-static volatile uint8_t fg_pulse_count = 0;
-
-void init_fan() {
+void init_fan(void) {
     DDRB |= _BV(P_PWM);   // PWM out
     PORTB &= ~_BV(P_PWM); // PWM low
 

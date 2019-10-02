@@ -21,7 +21,7 @@
 
 #include <stdint.h>
 
-void init_fan();
+void init_fan(void);
 void set_fan_duty(uint8_t duty);
 
 #endif // __FAN_H_

@@ -21,9 +21,6 @@
 
 #include <stdint.h>
 
-void reset_fan_control();
-void fan_control_loop(int control_period);
-void stop_fan_control();
-void toggle_fan_control_trace();
+void control_fan(void);
 
 #endif // __FANCONTROL_H_

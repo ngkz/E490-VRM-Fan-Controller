@@ -16,17 +16,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdbool.h>
-#include <math.h>
+#include <stdint.h>
+#include <stdio.h>
 #include <avr/pgmspace.h>
-#include "config.h"
 #include "fancontrol.h"
 #include "fan.h"
 #include "thermometer.h"
-#include "uart.h"
 
 static uint8_t current_level_idx;
-static bool trace;
 
 struct level {
     uint8_t duty;
@@ -46,50 +43,32 @@ static const struct level fan_control_table[] = {
 };
 #define N_FAN_CONTROL_LEVELS (sizeof(fan_control_table) / sizeof(fan_control_table[0]))
 
-void reset_fan_control() {
-    current_level_idx = 0;
-}
+#ifdef TRACE_ON
+#define TRACE(format, ...) printf_P(PSTR(format), __VA_ARGS__)
+#else
+#define TRACE(format, ...)
+#endif
 
-void fan_control_loop(int control_period) {
+void control_fan(void) {
     int8_t temp = measure_temp();
-    if (trace) {
-        putP(PSTR("T=")); putd(temp);
-    }
+    TRACE("T=%d", temp);
 
     const struct level *current_level = &fan_control_table[current_level_idx];
     while (current_level_idx > 0 && temp < current_level->lower_limit) {
-        if (trace) {
-            putP(PSTR(" T<")); putd(current_level->lower_limit);
-        }
+        TRACE(", T<%d", current_level->lower_limit);
         current_level--;
         current_level_idx--;
-        if (trace) {
-            putP(PSTR(" lvl=")); putu(current_level_idx);
-        }
+        TRACE(" lvl=%u", current_level_idx);
     }
 
     while (current_level_idx + 1 < N_FAN_CONTROL_LEVELS && temp > current_level->upper_limit) {
-        if (trace) {
-            putP(PSTR(" T>")); putd(current_level->upper_limit);
-        }
+        TRACE(", T>%d", current_level->upper_limit);
         current_level++;
         current_level_idx++;
-        if (trace) {
-            putP(PSTR(" lvl=")); putu(current_level_idx);
-        }
+        TRACE(" lvl=%u", current_level_idx);
     }
 
     set_fan_duty(current_level->duty);
 
-    if (trace) {
-        putP(PSTR(" duty=")); putuln(current_level->duty);
-    }
-}
-
-void stop_fan_control() {
-    set_fan_duty(0);
-}
-
-void toggle_fan_control_trace() {
-    trace = !trace;
+    TRACE(", duty=%u\n", current_level->duty);
 }

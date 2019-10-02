@@ -21,9 +21,7 @@
 
 #include <stdint.h>
 
-void init_thermometer();
-int16_t adc_diode_voltage();
-float adc_value_to_mv(float value);
-int8_t measure_temp();
+void init_thermometer(void);
+int8_t measure_temp(void);
 
 #endif // __THERMOMETER_H_

@@ -20,13 +20,11 @@
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 #include <avr/power.h>
-#include "config.h"
-#include "uart.h"
 #include "fan.h"
 #include "thermometer.h"
 #include "timer.h"
 #include "fancontrol.h"
-#include "asciichr.h"
+#include "uart.h"
 
 #define TUNED_OSCCAL 0x99
 
@@ -37,16 +35,10 @@ int main() {
     // calibrate internal oscillator
     OSCCAL = TUNED_OSCCAL;
 
-    init_config();
     init_uart();
     init_fan();
     init_thermometer();
     init_timer();
-    start_timer();
-
-    //pull-up unused pin
-    DDRB &= ~_BV(PB2);
-    PORTB |= _BV(PB2);
 
     power_usi_disable();
 
@@ -55,21 +47,9 @@ int main() {
     set_sleep_mode(SLEEP_MODE_IDLE);
 
     for (;;) {
-        while (available_input() > 0) {
-            char ch = getch();
-            if (ch == ASCII_CR || ch == ASCII_LF) {
-                stop_fan_control();
-                stop_timer();
-                config_ui();
-                start_timer();
-                reset_fan_control();
-                break;
-            }
-        }
-
         if (is_timer_elapsed()) {
             clear_elapsed_flag();
-            fan_control_loop(TICK);
+            control_fan();
         }
 
         sleep_mode();
