@@ -20,6 +20,7 @@
 #include <avr/power.h>
 #include <avr/io.h>
 #include "thermometer.h"
+#include "debug.h"
 
 #define BOLTZMANN_CONSTANT 1.379553e-23f
 #define ELEMENTARY_CHARGE  1.600218e-19f
@@ -107,5 +108,8 @@ int8_t measure_temp(void) {
 
     disable_adc();
 
-    return (int8_t)roundf((v10 - v200) / (IDEALITY_FACTOR * BOLTZMANN_CONSTANT / ELEMENTARY_CHARGE * logf(CURRENT_RATIO)));
+    float temp = (v10 - v200) / (IDEALITY_FACTOR * BOLTZMANN_CONSTANT / ELEMENTARY_CHARGE * logf(CURRENT_RATIO));
+    TRACE("THM: v10=%fmV v200=%fmV T=%fC\n", v10 * 1000, v200 * 1000, temp);
+
+    return (int8_t)roundf(temp);
 }

@@ -17,11 +17,10 @@
  */
 
 #include <stdint.h>
-#include <stdio.h>
-#include <avr/pgmspace.h>
 #include "fancontrol.h"
 #include "fan.h"
 #include "thermometer.h"
+#include "debug.h"
 
 static uint8_t current_level_idx;
 
@@ -43,15 +42,9 @@ static const struct level fan_control_table[] = {
 };
 #define N_FAN_CONTROL_LEVELS (sizeof(fan_control_table) / sizeof(fan_control_table[0]))
 
-#ifdef TRACE_ON
-#define TRACE(format, ...) printf_P(PSTR(format), __VA_ARGS__)
-#else
-#define TRACE(format, ...)
-#endif
-
 void control_fan(void) {
     int8_t temp = measure_temp();
-    TRACE("T=%d", temp);
+    TRACE("FC: T=%d", temp);
 
     const struct level *current_level = &fan_control_table[current_level_idx];
     while (current_level_idx > 0 && temp < current_level->lower_limit) {
