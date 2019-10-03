@@ -312,6 +312,8 @@ typedef union {
  */
 #include "stk500.h"
 
+#define TUNED_OSCCAL 0x99
+
 #ifndef LED_START_FLASHES
 #define LED_START_FLASHES 0
 #endif
@@ -535,6 +537,8 @@ void pre_main(void) {
 /* main program starts here */
 int main(void) {
   uint8_t ch;
+
+  OSCCAL = TUNED_OSCCAL;
 
   /*
    * Making these local and in registers prevents the need for initializing
