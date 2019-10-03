@@ -32,13 +32,13 @@ struct level {
 
 static const struct level fan_control_table[] = {
     {0, 0,  44},
-    {3, 40, 47},
-    {4, 43, 51},
-    {5, 47, 54},
-    {6, 50, 57},
-    {7, 53, 60},
-    {8, 56, 64},
-    {9, 60, 99},
+    {3, 41, 46},
+    {4, 43, 48},
+    {5, 45, 50},
+    {6, 47, 53},
+    {7, 50, 55},
+    {8, 52, 59},
+    {9, 54, 127},
 };
 #define N_FAN_CONTROL_LEVELS (sizeof(fan_control_table) / sizeof(fan_control_table[0]))
 
