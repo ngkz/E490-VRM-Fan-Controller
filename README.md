@@ -8,7 +8,8 @@
 ### Set fuse bits
 
 ``` sh
-$ pio run -t fuses
+# Internal 8MHz clock, Self-programming enabled
+avrdude -c buspirate -P/dev/ttyUSB0 -p attiny85 -U lfuse:w:0xE2:m -U hfuse:w:0xDF:m -U efuse:w:0xFE:m
 ```
 
 ### Calibrate internal oscillator
@@ -46,13 +47,55 @@ void loop() {
 }
 ```
 
-``` sh
-$ vi firmware/src/main.c
-#define TUNED_OSCCAL     <CALIBRATED OSCCAL HERE>
+```
+$ editor firmware/src/main.c
+#define TUNED_OSCCAL <CALIBRATED OSCCAL HERE>
+```
+
+```
+$ editor optiboot/optiboot/bootloaders/optiboot/optiboot.c
+#define TUNED_OSCCAL <CALIBRATED OSCCAL HERE>
+```
+
+### Install bootloader
+
+```
+$ cd optiboot/optiboot/bootloaders/optiboot
+$ make attiny85at8 PRODUCTION=1
+$ avrdude -c buspirate -P /dev/ttyUSB0 -p attiny85 -U flash:w:optiboot_attiny85_8000000L.hex
+```
+
+### Test bootloader
+- Hook up LED and a resistor to PB0
+- Check the LED blinks
+
+```
+$ cat <<'EOS' >/tmp/blink.c
+#include <avr/io.h>
+#include <util/delay.h>
+
+int main() {
+    DDRB = _BV(PB0);
+    for (;;) {
+        PORTB ^= _BV(PB0);
+        _delay_ms(500);
+    }
+    return 0;
+}
+EOS
+$ avr-gcc -o /tmp/blink.elf -Os -mmcu=attiny85 -DF_CPU=8000000L /tmp/blink.c
+$ avrdude -c arduino -P /dev/ttyUSB0 -b 19200 -p attiny85 -U flash:w:/tmp/blink.elf
+```
+
+### Disable reset pin
+
+```
+# Internal 8MHz clock, Self-programming enabled, Reset disabled (Enable PB5 I/O pin)
+$ avrdude -c buspirate -P/dev/ttyUSB0 -p attiny85 -U lfuse:w:0xE2:m -U hfuse:w:0x5F:m -U efuse:w:0xFE:m
 ```
 
 ### Upload firmware
 
-``` sh
+```
 $ pio run -t upload
 ```
