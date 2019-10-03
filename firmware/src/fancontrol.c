@@ -31,30 +31,29 @@ struct level {
 };
 
 static const struct level fan_control_table[] = {
-    {0, 0,  44},
-    {3, 41, 46},
-    {4, 43, 48},
-    {5, 45, 50},
-    {6, 47, 53},
-    {7, 50, 55},
-    {8, 52, 59},
-    {9, 54, 127},
+    {0, -128, 44},
+    {3, 41,   46},
+    {4, 43,   48},
+    {5, 45,   50},
+    {6, 47,   53},
+    {7, 50,   55},
+    {8, 52,   59},
+    {9, 54,   127},
 };
-#define N_FAN_CONTROL_LEVELS (sizeof(fan_control_table) / sizeof(fan_control_table[0]))
 
 void control_fan(void) {
     int8_t temp = measure_temp();
     TRACE("FC: T=%d", temp);
 
     const struct level *current_level = &fan_control_table[current_level_idx];
-    while (current_level_idx > 0 && temp < current_level->lower_limit) {
+    while (temp < current_level->lower_limit) {
         TRACE(", T<%d", current_level->lower_limit);
         current_level--;
         current_level_idx--;
         TRACE(" lvl=%u", current_level_idx);
     }
 
-    while (current_level_idx + 1 < N_FAN_CONTROL_LEVELS && temp > current_level->upper_limit) {
+    while (temp > current_level->upper_limit) {
         TRACE(", T>%d", current_level->upper_limit);
         current_level++;
         current_level_idx++;
