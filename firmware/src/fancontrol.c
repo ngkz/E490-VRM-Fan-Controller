@@ -38,7 +38,7 @@ static const struct level fan_control_table[] = {
     {6, 47,   53},
     {7, 50,   55},
     {8, 52,   59},
-    {9, 54,   127},
+    {9, 56,   127},
 };
 
 void control_fan(void) {
