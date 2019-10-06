@@ -1,6 +1,10 @@
 # PlatformIO
 /firmware/.pio
 
+# optiboot
+/optiboot/optiboot/bootloaders/optiboot/*.elf
+/optiboot/optiboot/bootloaders/optiboot/*.hex
+
 # For PCBs designed using KiCad: http://www.kicad-pcb.org/
 # Format documentation: http://kicad-pcb.org/help/file-formats/
 
