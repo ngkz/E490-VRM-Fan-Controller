@@ -24,7 +24,7 @@ HELPTEXT += "target attiny85     - attiny85at<freq> \n"
 
 attiny85: TARGET = attiny85
 attiny85: MCU_TARGET = attiny85
-attiny85: CFLAGS += $(COMMON_OPTIONS) '-DVIRTUAL_BOOT_PARTITION' '-DLED_START_FLASHES=0' '-DSOFT_UART'
+attiny85: CFLAGS += $(COMMON_OPTIONS) '-DVIRTUAL_BOOT_PARTITION' '-DSOFT_UART'
 attiny85: AVR_FREQ ?= 8000000L
 attiny85: LDSECTIONS  = -Wl,--section-start=.text=0x1DC0 -Wl,--section-start=.version=0x1ffe
 attiny85: $(PROGRAM)_attiny85.hex
@@ -34,7 +34,7 @@ endif
 
 
 attiny85at8:
-	$(MAKE) attiny85 AVR_FREQ=8000000L BAUD_RATE=19200
+	$(MAKE) attiny85 AVR_FREQ=8000000L BAUD_RATE=19200 LED_START_FLASHES=0
 	mv $(PROGRAM)_attiny85.hex $(PROGRAM)_attiny85_8000000L.hex
 ifndef PRODUCTION
 	mv $(PROGRAM)_attiny85.lst $(PROGRAM)_attiny85_8000000L.lst
