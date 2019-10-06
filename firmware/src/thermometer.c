@@ -25,7 +25,7 @@
 #define BOLTZMANN_CONSTANT 1.379553e-23f
 #define ELEMENTARY_CHARGE  1.600218e-19f
 
-#define P_BDPWR10          PB0
+#define P_BDPWR10          PB5
 #define P_BDPWR200         PB2
 #define P_DPLUS            PB4    //D+, ADC2
 #define DID_DPLUS          ADC2D

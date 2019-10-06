@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:vrmfanctl_pcb-cache
-EELAYER 30 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -142,24 +142,24 @@ F 3 "" H 3800 2950 50  0001 C CNN
 	1    3800 2950
 	1    0    0    -1  
 $EndComp
-Text Notes 6100 1100 0    50   ~ 0
+Text Notes 7300 700  0    50   ~ 0
 PWM(BLUE)
-Text Notes 6100 1200 0    50   ~ 0
+Text Notes 7300 800  0    50   ~ 0
 FOO(YELLOW)
-Text Notes 6100 1300 0    50   ~ 0
+Text Notes 7300 900  0    50   ~ 0
 V-(BLACK)
-Text Notes 6100 1400 0    50   ~ 0
+Text Notes 7300 1000 0    50   ~ 0
 V+(RED)
-Text Notes 6100 1000 0    50   ~ 0
+Text Notes 7300 600  0    50   ~ 0
 To Fan (KDB0305HA3-CD7)
 Wire Wire Line
-	5700 1250 5850 1250
+	6900 850  7050 850 
 Wire Wire Line
-	5700 1250 5700 1300
+	6900 850  6900 900 
 Wire Wire Line
 	4500 1350 4500 1500
 Wire Wire Line
-	5800 1350 5850 1350
+	7000 950  7050 950 
 Text Notes 1100 2050 0    50   ~ 0
 5V±5%
 Wire Wire Line
@@ -185,7 +185,7 @@ F 3 "" H 3800 1250 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	5800 1350 5800 1500
+	7000 950  7000 1100
 Wire Wire Line
 	3800 1250 3800 1350
 Connection ~ 3800 1350
@@ -224,23 +224,23 @@ $EndComp
 $Comp
 L power:GND #PWR07
 U 1 1 5D5E75C4
-P 5700 1300
-F 0 "#PWR07" H 5700 1050 50  0001 C CNN
-F 1 "GND" H 5705 1127 50  0000 C CNN
-F 2 "" H 5700 1300 50  0001 C CNN
-F 3 "" H 5700 1300 50  0001 C CNN
-	1    5700 1300
+P 6900 900
+F 0 "#PWR07" H 6900 650 50  0001 C CNN
+F 1 "GND" H 6905 727 50  0000 C CNN
+F 2 "" H 6900 900 50  0001 C CNN
+F 3 "" H 6900 900 50  0001 C CNN
+	1    6900 900 
 	1    0    0    -1  
 $EndComp
 $Comp
 L power:VCC #PWR08
 U 1 1 5D5EAA48
-P 5800 1500
-F 0 "#PWR08" H 5800 1350 50  0001 C CNN
-F 1 "VCC" H 5818 1673 50  0000 C CNN
-F 2 "" H 5800 1500 50  0001 C CNN
-F 3 "" H 5800 1500 50  0001 C CNN
-	1    5800 1500
+P 7000 1100
+F 0 "#PWR08" H 7000 950 50  0001 C CNN
+F 1 "VCC" H 7018 1273 50  0000 C CNN
+F 2 "" H 7000 1100 50  0001 C CNN
+F 3 "" H 7000 1100 50  0001 C CNN
+	1    7000 1100
 	-1   0    0    1   
 $EndComp
 Text Notes 7350 2550 0    50   ~ 0
@@ -250,15 +250,14 @@ D+
 $Comp
 L Connector:Conn_01x04_Female J4
 U 1 1 5D5F6860
-P 6050 1150
-F 0 "J4" H 6100 800 50  0000 L CNN
-F 1 "Pin socket L-shape" H 6100 700 50  0000 L CNN
-F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Horizontal" H 6050 1150 50  0001 C CNN
-F 3 "~" H 6050 1150 50  0001 C CNN
-	1    6050 1150
+P 7250 750
+F 0 "J4" H 7300 400 50  0000 L CNN
+F 1 "Pin socket L-shape" H 7300 300 50  0000 L CNN
+F 2 "Connector_PinSocket_2.54mm:PinSocket_1x04_P2.54mm_Horizontal" H 7250 750 50  0001 C CNN
+F 3 "~" H 7250 750 50  0001 C CNN
+	1    7250 750 
 	1    0    0    -1  
 $EndComp
-NoConn ~ 5100 2300
 Text Label 5100 1900 0    50   ~ 0
 PWM
 $Comp
@@ -272,9 +271,7 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/atmel-2586-avr-8-bit-microc
 	1    4500 2100
 	1    0    0    -1  
 $EndComp
-NoConn ~ 5850 1150
-Wire Wire Line
-	5850 1050 5600 1050
+NoConn ~ 7050 750 
 Wire Wire Line
 	5600 1900 5100 1900
 $Comp
@@ -403,7 +400,7 @@ Wire Wire Line
 Connection ~ 6200 4050
 Wire Wire Line
 	6200 4050 6550 4050
-Text Label 5100 1800 0    50   ~ 0
+Text Label 5100 2300 0    50   ~ 0
 BDPWR10
 Wire Wire Line
 	7150 3900 7150 4250
@@ -442,12 +439,6 @@ Wire Wire Line
 	5100 2000 5400 2000
 Wire Wire Line
 	5400 2000 5400 4250
-Wire Wire Line
-	5600 1050 5600 1900
-Wire Wire Line
-	5100 1800 5500 1800
-Wire Wire Line
-	5500 1800 5500 4150
 Wire Wire Line
 	6550 3450 6550 3600
 $Comp
@@ -499,8 +490,46 @@ Wire Wire Line
 Connection ~ 5850 3000
 Wire Wire Line
 	5850 3000 5850 3050
-Text Notes 7400 3300 0    50   ~ 0
-1x/about 20.1x
-Text Label 5100 2300 0    50   ~ 0
-TX
+Text Label 5100 1800 0    50   ~ 0
+TX_RX
+$Comp
+L Connector:Conn_01x02_Male J2
+U 1 1 5D999CB1
+P 7250 1600
+F 0 "J2" H 7222 1480 50  0000 R CNN
+F 1 "Pin header L-shape" H 7222 1571 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Horizontal" H 7250 1600 50  0001 C CNN
+F 3 "~" H 7250 1600 50  0001 C CNN
+	1    7250 1600
+	-1   0    0    -1  
+$EndComp
+Wire Wire Line
+	5600 650  5600 1900
+Wire Wire Line
+	5600 650  7050 650 
+Wire Wire Line
+	5100 2300 5500 2300
+Wire Wire Line
+	5500 2300 5500 4150
+Wire Wire Line
+	5100 1800 5700 1800
+Wire Wire Line
+	5700 1800 5700 1600
+Wire Wire Line
+	5700 1600 7050 1600
+$Comp
+L power:GND #PWR0104
+U 1 1 5D9A1D78
+P 6950 1800
+F 0 "#PWR0104" H 6950 1550 50  0001 C CNN
+F 1 "GND" H 6955 1627 50  0000 C CNN
+F 2 "" H 6950 1800 50  0001 C CNN
+F 3 "" H 6950 1800 50  0001 C CNN
+	1    6950 1800
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	7050 1700 6950 1700
+Wire Wire Line
+	6950 1700 6950 1800
 $EndSCHEMATC

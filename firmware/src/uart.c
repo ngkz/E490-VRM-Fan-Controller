@@ -56,7 +56,7 @@
 #include "uart.h"
 
 #define BAUD_RATE               4800
-#define P_TX                    PB5
+#define P_TX                    PB0
 #define ONEBIT_DELAY_COUNT      ((F_CPU/BAUD_RATE-8)/3)
 
 static int uart_putchar(char c, FILE *stream);
