@@ -19,6 +19,9 @@
 #ifndef __UART_H_
 #define __UART_H_
 
+#include <stdint.h>
+
 void init_uart(void);
+uint8_t available_input(void);
 
 #endif // __UART_H_
