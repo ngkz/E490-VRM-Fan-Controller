@@ -20,10 +20,20 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <ctype.h>
 #include "thermometer.h"
 #include "fan.h"
 
 bool trace;
+
+static uint8_t readu8(void) {
+    uint8_t value = 0;
+    for (;;) {
+        char ch = getchar();
+        if (!isdigit(ch)) return value;
+        value = value * 10 + ch - '0';
+    }
+}
 
 void debug_ui(void) {
     for (;;) {
@@ -54,10 +64,9 @@ void debug_ui(void) {
                 break;
             case 'd': {
                 //set fan duty
-                uint8_t duty = 0;
                 printf_P(PSTR("duty? "));
-                scanf_P(PSTR("%hhu"), &duty);
-                set_fan_duty(duty);
+                set_fan_duty(readu8());
+                putchar('\n');
                 break;
             }
             case 'q':
