@@ -52,21 +52,17 @@ $ editor firmware/src/main.c
 #define TUNED_OSCCAL <CALIBRATED OSCCAL HERE>
 ```
 
-```
-$ editor optiboot/optiboot/bootloaders/optiboot/optiboot.c
-#define TUNED_OSCCAL <CALIBRATED OSCCAL HERE>
-```
-
 ### Install bootloader
+- Download and install [One-Way-Loader Software](http://jtxp.org/tech/onewayloader_en.htm#quickstart)
 
 ```
-$ cd optiboot/optiboot/bootloaders/optiboot
-$ make attiny85at8 PRODUCTION=1
-$ avrdude -c buspirate -P /dev/ttyUSB0 -p attiny85 -U flash:w:optiboot_attiny85_8000000L.hex
+$ owl --device=tn85 --rxport=b0 --clock=8000 --targetname=attiny85_pb0_8mhz
+$ avrdude -c buspirate -P /dev/ttyUSB0 -e -p attiny85 -U flash:w:<OWL INSTALLATION PATH>/targets/attiny85_pb0_8mhz.hex
 ```
 
 ### Test bootloader
-- Hook up LED and a resistor to PB0
+- Connect TTL serial adapter TX to PB0
+- Hook up LED and a resistor to PB4
 - Check the LED blinks
 
 ```
@@ -75,19 +71,23 @@ $ cat <<'EOS' >/tmp/blink.c
 #include <util/delay.h>
 
 int main() {
-    DDRB = _BV(PB0);
+    DDRB = _BV(PB4);
     for (;;) {
-        PORTB ^= _BV(PB0);
+        PORTB ^= _BV(PB4);
         _delay_ms(500);
     }
     return 0;
 }
 EOS
 $ avr-gcc -o /tmp/blink.elf -Os -mmcu=attiny85 -DF_CPU=8000000L /tmp/blink.c
-$ avrdude -c arduino -P /dev/ttyUSB0 -b 19200 -p attiny85 -U flash:w:/tmp/blink.elf
+$ avr-objcopy -j .text -j .data -O ihex /tmp/blink.elf /tmp/blink.hex
+(reset avr)
+$ owl --targetname=attiny85_pb0_8mhz --flashfile=/tmp/blink.hex --serialport=/dev/ttyUSB0
 ```
 
-### Disable reset pin
+### Enable PB5 I/O pin (Disable reset pin)
+- This step makes the microcontroller not programmable with low voltage programming.
+- If you want to erase the bootloader, use HVSP fuse resetter.
 
 ```
 # Internal 8MHz clock, Self-programming enabled, Reset disabled (Enable PB5 I/O pin)
