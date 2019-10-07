@@ -158,6 +158,7 @@ static int uart_getchar(FILE *stream) {
 }
 
 static int uart_putchar(char c, FILE *stream) {
+    if (c == '\n') putch('\r');
     putch(c);
     return 0;
 }
