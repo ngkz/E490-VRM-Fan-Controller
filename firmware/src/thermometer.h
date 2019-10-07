@@ -23,5 +23,9 @@
 
 void init_thermometer(void);
 int8_t measure_temp(void);
+float read_diode_voltage(void);
+void diode_on_10uA(void);
+void diode_on_200uA(void);
+void diode_off(void);
 
 #endif // __THERMOMETER_H_

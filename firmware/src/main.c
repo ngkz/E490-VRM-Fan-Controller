@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <stdio.h>
 #include <avr/io.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
@@ -25,6 +26,7 @@
 #include "timer.h"
 #include "fancontrol.h"
 #include "uart.h"
+#include "debug.h"
 
 #define TUNED_OSCCAL 0x99
 
@@ -50,6 +52,11 @@ int main() {
         if (is_timer_elapsed()) {
             clear_elapsed_flag();
             control_fan();
+        }
+
+        while (available_input() > 0) {
+            char ch = getchar();
+            if (ch == '\r' || ch == '\n') debug_ui();
         }
 
         sleep_mode();

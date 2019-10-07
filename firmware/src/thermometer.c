@@ -35,15 +35,15 @@
 #define CURRENT_RATIO      (1.0f/20)
 #define IDEALITY_FACTOR    1.0f
 
-static void diode_on_10uA(void) {
+void diode_on_10uA(void) {
     PORTB = (PORTB & ~_BV(P_BDPWR10)) | _BV(P_BDPWR200);
 }
 
-static void diode_on_200uA(void) {
+void diode_on_200uA(void) {
     PORTB &= ~(_BV(P_BDPWR10) | _BV(P_BDPWR200));
 }
 
-static void diode_off(void) {
+void diode_off(void) {
     PORTB |= _BV(P_BDPWR10) | _BV(P_BDPWR200);
 }
 
@@ -112,4 +112,11 @@ int8_t measure_temp(void) {
     TRACE("THM: v10=%fmV v200=%fmV T=%fC\n", v10 * 1000, v200 * 1000, temp);
 
     return (int8_t)roundf(temp);
+}
+
+float read_diode_voltage(void) {
+    enable_adc();
+    float ret = adc();
+    disable_adc();
+    return ret;
 }
