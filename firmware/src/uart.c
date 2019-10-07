@@ -59,8 +59,7 @@
 #define P_TX_RX                 PB0
 #define PCINT_TX_RX             PCINT0
 #define SERIAL_BUFFER_SIZE      16
-#define ONEBIT_DELAY_COUNT_TX   ((F_CPU/BAUD_RATE-9+2)/3)
-#define ONEBIT_DELAY_COUNT_RX   ((F_CPU/BAUD_RATE-8+2)/3)
+#define ONEBIT_DELAY_COUNT      (F_CPU/BAUD_RATE)
 
 static int uart_putchar(char c, FILE *stream);
 static int uart_getchar(FILE *stream);
@@ -85,8 +84,14 @@ static void putch(char ch) {
         "   sbi %[port],%[bit]\n"          // |
         "   nop\n"                         //_|
         "3: ldi r25, %[delaycount]\n "     //^|
-        "4: dec r25\n"                     // | ONEBIT_DELAY_COUNT_TX * 3 cycles
+        "4: dec r25\n"                     // | ONEBIT_DELAY_COUNT cycles
         "   brne 4b\n"                     // |
+#if (ONEBIT_DELAY_COUNT - 9) % 3 >= 1      // |
+        "   nop\n"                         // |
+#endif                                     // |
+#if (ONEBIT_DELAY_COUNT - 9) % 3 >= 2      // |
+        "   nop\n"                         // |
+#endif                                     //_|
         "   lsr %[ch]\n"                   //^|
         "   dec %[bitcount]\n"             // | 4 cycles
         "   brne 1b\n"                     //_|
@@ -97,7 +102,7 @@ static void putch(char ch) {
           [port] "I" (_SFR_IO_ADDR(PORTB)),
           [ddr] "I" (_SFR_IO_ADDR(DDRB)),
           [bit] "I" (P_TX_RX),
-          [delaycount] "M"(ONEBIT_DELAY_COUNT_TX)
+          [delaycount] "M"((ONEBIT_DELAY_COUNT-9) / 3)
         : "r25"
     );
     GIFR |= _BV(PCIF);
@@ -110,11 +115,17 @@ ISR(PCINT0_vect) {
     uint8_t dummy;
     asm volatile(
         "1:   ldi r25, %[startbitdelay]\n"           //^| Get to 0.25 of start bit (our baud is too fast, so give room to correct)
-        "2:   dec r25\n"                             // | ONEBIT_DELAY_COUNT_RX / 4 * 3 cycles
+        "2:   dec r25\n"                             // | ONEBIT_DELAY_COUNT / 4 * 3 cycles
         "     brne 2b\n"                             //_|
         "3:   ldi r25, %[onebitdelay]\n"             //^|
-        "4:   dec r25\n"                             // | ONEBIT_DELAY_COUNT_RX * 3 cycles
-        "     brne 4b\n"                             //_|
+        "4:   dec r25\n"                             // | ONEBIT_DELAY_COUNT cycles
+        "     brne 4b\n"                             // |
+#if (ONEBIT_DELAY_COUNT - 8) % 3 >= 1                // |
+        "   nop\n"                                   // |
+#endif                                               // |
+#if (ONEBIT_DELAY_COUNT - 8) % 3 >= 2                // |
+        "   nop\n"                                   // |
+#endif                                               //_|
         "     clc\n"                                 //^|
         "     sbic %[pin], %[bit]\n"                 // |
         "     sec\n"                                 // |
@@ -128,8 +139,8 @@ ISR(PCINT0_vect) {
         : [count] "1" ((uint8_t)9),
           [pin] "I" (_SFR_IO_ADDR(PINB)),
           [bit] "I" (P_TX_RX),
-          [onebitdelay] "M"(ONEBIT_DELAY_COUNT_RX),
-          [startbitdelay] "M"(ONEBIT_DELAY_COUNT_RX/4)
+          [onebitdelay] "M"((ONEBIT_DELAY_COUNT - 8) / 3),
+          [startbitdelay] "M"(ONEBIT_DELAY_COUNT / 3 / 4)
         : "r25"
     );
 
