@@ -108,7 +108,7 @@ int8_t measure_temp(void) {
 
     disable_adc();
 
-    float temp = (v10 - v200) / (IDEALITY_FACTOR * BOLTZMANN_CONSTANT / ELEMENTARY_CHARGE * logf(CURRENT_RATIO));
+    float temp = (v10 - v200) / (IDEALITY_FACTOR * BOLTZMANN_CONSTANT / ELEMENTARY_CHARGE * logf(CURRENT_RATIO)) - 273.15;
     TRACE("THM: v10=%fmV v200=%fmV T=%fC\n", v10 * 1000, v200 * 1000, temp);
 
     return (int8_t)roundf(temp);
