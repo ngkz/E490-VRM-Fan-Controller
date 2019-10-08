@@ -62,6 +62,13 @@ void debug_ui(void) {
                 // read diode voltage
                 printf_P(PSTR("%fmV\n"), read_diode_voltage() * 1000);
                 break;
+            case 'r': {
+                bool trace_save = trace;
+                trace = true;
+                measure_temp();
+                trace = trace_save;
+                break;
+            }
             case 'd': {
                 //set fan duty
                 printf_P(PSTR("duty? "));
