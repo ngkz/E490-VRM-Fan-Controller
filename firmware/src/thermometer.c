@@ -19,6 +19,8 @@
 #include <math.h>
 #include <avr/power.h>
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <avr/sleep.h>
 #include "thermometer.h"
 #include "debug.h"
 
@@ -60,16 +62,21 @@ static void disable_adc(void) {
 static float adc() {
     const int N = 64;
     uint16_t result = 0;
+
+    set_sleep_mode(SLEEP_MODE_ADC);
+    sleep_enable();
+
     for (int i = 0; i < N; i++) {
-        // start conversion
-        ADCSRA |= _BV(ADSC);
-        // wait for conversion to complete
-        loop_until_bit_is_clear(ADCSRA, ADSC);
-        //ADCL must be read first
-        uint8_t result_low = ADCL;
-        uint8_t result_high = ADCH;
-        result += result_high << 8 | result_low;
+        // Enter ADC Noise Reduction mode. the ADC starts conversion. Wait for the conversion complete.
+        do {
+            sleep_cpu();
+        } while(bit_is_set(ADCSRA, ADSC));
+        // Read the result
+        result += ADC;
     }
+
+    sleep_disable();
+
     return ((float)result) / N * 1.1f / 1024;
 }
 
@@ -84,8 +91,8 @@ void init_thermometer(void) {
 
     // use internal 1.1V voltage reference, no left adjust result, input channel is D+ - D-
     ADMUX = _BV(REFS1) | ADMUX_DIODE << MUX0;
-    // ADC disabled, Auto Trigger disabled, ADC interrupt disabled, prescaler 1/2 (125kHz)
-    ADCSRA = 0;
+    // ADC disabled, Auto Trigger disabled, ADC interrupt enabled, prescaler 1/2 (125kHz)
+    ADCSRA = _BV(ADIE);
     // unipolar input mode, analog comparator multiplexer disabled, no input polarity reversal
     ADCSRB = 0;
     // disable digital input buffer of D+ and D-
@@ -120,3 +127,5 @@ float read_diode_voltage(void) {
     disable_adc();
     return ret;
 }
+
+EMPTY_INTERRUPT(ADC_vect);

@@ -46,8 +46,6 @@ int main() {
 
     sei();
 
-    set_sleep_mode(SLEEP_MODE_IDLE);
-
     for (;;) {
         if (is_timer_elapsed()) {
             clear_elapsed_flag();
@@ -59,6 +57,7 @@ int main() {
             if (ch == '\r' || ch == '\n') debug_ui();
         }
 
+        set_sleep_mode(SLEEP_MODE_IDLE);
         sleep_mode();
     }
 
