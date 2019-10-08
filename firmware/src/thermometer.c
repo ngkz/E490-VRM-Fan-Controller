@@ -28,7 +28,7 @@
 #define ELEMENTARY_CHARGE  1.602177e-19f
 
 #define P_BDPWR10          PB5
-#define P_BDPWR200         PB0
+#define P_BDPWR200         PB2
 #define P_DPLUS            PB4    //D+, ADC2
 #define DID_DPLUS          ADC2D
 #define P_DMINUS           PB3    //D-, ADC3

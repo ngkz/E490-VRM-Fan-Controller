@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:vrmfanctl_pcb-cache
-EELAYER 30 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -404,7 +404,7 @@ Text Label 5100 2300 0    50   ~ 0
 BDPWR10
 Wire Wire Line
 	7150 3900 7150 4250
-Text Label 5100 1800 0    50   ~ 0
+Text Label 5100 2000 0    50   ~ 0
 BDPWR200
 Wire Wire Line
 	6500 2100 6500 2800
@@ -486,7 +486,7 @@ Wire Wire Line
 Connection ~ 5850 3000
 Wire Wire Line
 	5850 3000 5850 3050
-Text Label 5100 2000 0    50   ~ 0
+Text Label 5100 1800 0    50   ~ 0
 TX_RX
 $Comp
 L Connector:Conn_01x02_Male J2
@@ -525,11 +525,11 @@ Wire Wire Line
 Wire Wire Line
 	6950 1700 6950 1800
 Wire Wire Line
-	5100 1800 5500 1800
+	5700 1600 5700 1800
 Wire Wire Line
-	5500 1800 5500 4250
+	5100 2000 5500 2000
 Wire Wire Line
-	5100 2000 5700 2000
+	5500 2000 5500 4250
 Wire Wire Line
-	5700 1600 5700 2000
+	5100 1800 5700 1800
 $EndSCHEMATC

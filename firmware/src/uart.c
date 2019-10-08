@@ -56,7 +56,7 @@
 #include "uart.h"
 
 #define BAUD_RATE               4800
-#define P_TX_RX                 PB2
+#define P_TX_RX                 PB0
 #define PCINT_TX_RX             PCINT0
 #define SERIAL_BUFFER_SIZE      16
 #define ONEBIT_DELAY_COUNT      (F_CPU/BAUD_RATE)
