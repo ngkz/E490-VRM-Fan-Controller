@@ -60,8 +60,8 @@ static void disable_adc(void) {
 }
 
 static float adc() {
-    const int N = 64;
-    uint16_t result = 0;
+    const int N = 256;
+    uint32_t sum = 0;
 
     set_sleep_mode(SLEEP_MODE_ADC);
     sleep_enable();
@@ -72,12 +72,12 @@ static float adc() {
             sleep_cpu();
         } while(bit_is_set(ADCSRA, ADSC));
         // Read the result
-        result += ADC;
+        sum += ADC;
     }
 
     sleep_disable();
 
-    return ((float)result) / N * 1.1f / 1024;
+    return ((float)sum) / N * 1.1f / 1024;
 }
 
 void init_thermometer(void) {
