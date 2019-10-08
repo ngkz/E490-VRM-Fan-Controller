@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:vrmfanctl_pcb-cache
-EELAYER 26 0
+EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -404,7 +404,7 @@ Text Label 5100 2300 0    50   ~ 0
 BDPWR10
 Wire Wire Line
 	7150 3900 7150 4250
-Text Label 5100 2000 0    50   ~ 0
+Text Label 5100 1800 0    50   ~ 0
 BDPWR200
 Wire Wire Line
 	6500 2100 6500 2800
@@ -436,10 +436,6 @@ Connection ~ 6850 2500
 Wire Wire Line
 	6850 2500 7000 2500
 Wire Wire Line
-	5100 2000 5400 2000
-Wire Wire Line
-	5400 2000 5400 4250
-Wire Wire Line
 	6550 3450 6550 3600
 $Comp
 L Device:Q_NPN_ECB Q2
@@ -468,9 +464,9 @@ Wire Wire Line
 Wire Wire Line
 	5850 3900 5850 4050
 Wire Wire Line
-	5500 4150 6200 4150
+	5600 4150 6200 4150
 Wire Wire Line
-	5400 4250 7150 4250
+	5500 4250 7150 4250
 Wire Wire Line
 	5100 2100 6500 2100
 Wire Wire Line
@@ -490,31 +486,27 @@ Wire Wire Line
 Connection ~ 5850 3000
 Wire Wire Line
 	5850 3000 5850 3050
-Text Label 5100 1800 0    50   ~ 0
+Text Label 5100 2000 0    50   ~ 0
 TX_RX
 $Comp
 L Connector:Conn_01x02_Male J2
 U 1 1 5D999CB1
-P 7250 1600
-F 0 "J2" H 7222 1480 50  0000 R CNN
-F 1 "Pin header L-shape" H 7222 1571 50  0000 R CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Horizontal" H 7250 1600 50  0001 C CNN
-F 3 "~" H 7250 1600 50  0001 C CNN
-	1    7250 1600
-	-1   0    0    -1  
+P 7250 1700
+F 0 "J2" H 7222 1580 50  0000 R CNN
+F 1 "Pin header L-shape" H 7222 1671 50  0000 R CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Horizontal" H 7250 1700 50  0001 C CNN
+F 3 "~" H 7250 1700 50  0001 C CNN
+	1    7250 1700
+	-1   0    0    1   
 $EndComp
 Wire Wire Line
 	5600 650  5600 1900
 Wire Wire Line
 	5600 650  7050 650 
 Wire Wire Line
-	5100 2300 5500 2300
+	5100 2300 5600 2300
 Wire Wire Line
-	5500 2300 5500 4150
-Wire Wire Line
-	5100 1800 5700 1800
-Wire Wire Line
-	5700 1800 5700 1600
+	5600 2300 5600 4150
 Wire Wire Line
 	5700 1600 7050 1600
 $Comp
@@ -532,4 +524,12 @@ Wire Wire Line
 	7050 1700 6950 1700
 Wire Wire Line
 	6950 1700 6950 1800
+Wire Wire Line
+	5100 1800 5500 1800
+Wire Wire Line
+	5500 1800 5500 4250
+Wire Wire Line
+	5100 2000 5700 2000
+Wire Wire Line
+	5700 1600 5700 2000
 $EndSCHEMATC
