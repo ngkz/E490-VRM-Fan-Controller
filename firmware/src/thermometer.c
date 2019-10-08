@@ -35,7 +35,7 @@
 #define DID_DMINUS         ADC3D
 #define ADMUX_DIODE        0b0110 //D+(ADC2) - D-(ADC3), 1x
 #define CURRENT_RATIO      (9.7f/192.8)
-#define IDEALITY_FACTOR    1.8137f
+#define IDEALITY_FACTOR    1.8135f
 
 void diode_on_10uA(void) {
     PORTB = (PORTB & ~_BV(P_BDPWR10)) | _BV(P_BDPWR200);
