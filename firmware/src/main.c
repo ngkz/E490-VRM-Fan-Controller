@@ -44,6 +44,10 @@ int main() {
 
     power_usi_disable();
 
+    //pull-up unused pin
+    DDRB &= ~(_BV(PB2) | _BV(PB5));
+    PORTB |= _BV(PB2) | _BV(PB5);
+
     sei();
 
     for (;;) {

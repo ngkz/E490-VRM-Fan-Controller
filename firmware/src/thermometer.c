@@ -27,26 +27,21 @@
 #define BOLTZMANN_CONSTANT 1.379553e-23f
 #define ELEMENTARY_CHARGE  1.602177e-19f
 
-#define P_BDPWR10          PB5
-#define P_BDPWR200         PB2
-#define P_DPLUS            PB4    //D+, ADC2
-#define DID_DPLUS          ADC2D
-#define P_DMINUS           PB3    //D-, ADC3
-#define DID_DMINUS         ADC3D
-#define ADMUX_DIODE        0b0110 //D+(ADC2) - D-(ADC3), 1x
-#define CURRENT_RATIO      (9.7f/192.8)
-#define IDEALITY_FACTOR    1.8135f
+#define P_THMPWR           PB3
+#define P_THM              PB4    //ADC2
+#define DID_THM            ADC2D
+#define ADMUX_THM          0b0010 //ADC2
+#define BETA               3408   //thermistor beta
+#define R1                 3900
+#define T0                 25     //[C]
+#define R0                 9500   //thermistor resistance at T0[C]
 
-void diode_on_10uA(void) {
-    PORTB = (PORTB & ~_BV(P_BDPWR10)) | _BV(P_BDPWR200);
+static void thermistor_on(void) {
+    PORTB |= _BV(P_THMPWR);
 }
 
-void diode_on_200uA(void) {
-    PORTB &= ~(_BV(P_BDPWR10) | _BV(P_BDPWR200));
-}
-
-void diode_off(void) {
-    PORTB |= _BV(P_BDPWR10) | _BV(P_BDPWR200);
+static void thermistor_off(void) {
+    PORTB &= ~_BV(P_THMPWR);
 }
 
 static void enable_adc(void) {
@@ -59,7 +54,7 @@ static void disable_adc(void) {
     power_adc_disable();
 }
 
-static float adc() {
+static uint16_t adc() {
     const int N = 256;
     uint32_t sum = 0;
 
@@ -77,26 +72,25 @@ static float adc() {
 
     sleep_disable();
 
-    return ((float)sum) / N * 1.1f / 1024;
+    return (sum + N / 2) / N;
 }
 
 void init_thermometer(void) {
-    //D+ and D- are input
-    DDRB &= ~(_BV(P_DPLUS) | _BV(P_DMINUS));
-    PORTB &= ~(_BV(P_DPLUS) | _BV(P_DMINUS));
-    //BDPWR10 and BDPWR200 are output
-    DDRB |= _BV(P_BDPWR10) | _BV(P_BDPWR200);
+    //THM is input
+    DDRB &= ~_BV(P_THM);
+    PORTB &= ~_BV(P_THM);
+    //THMPWR is output
+    DDRB |= _BV(P_THMPWR);
+    thermistor_off();
 
-    diode_off();
-
-    // use internal 1.1V voltage reference, no left adjust result, input channel is D+ - D-
-    ADMUX = _BV(REFS1) | ADMUX_DIODE << MUX0;
+    // Vref = Vcc, no left adjust result, input channel is THM
+    ADMUX = ADMUX_THM << MUX0;
     // ADC disabled, Auto Trigger disabled, ADC interrupt enabled, prescaler 1/2 (125kHz)
     ADCSRA = _BV(ADIE);
     // unipolar input mode, analog comparator multiplexer disabled, no input polarity reversal
     ADCSRB = 0;
-    // disable digital input buffer of D+ and D-
-    DIDR0 = _BV(DID_DPLUS) | _BV(DID_DMINUS);
+    // disable digital input buffer of THM
+    DIDR0 = _BV(DID_THM);
     // analog comparator disabled
     ACSR = _BV(ACD);
     // shutdown adc and analog comparator
@@ -106,24 +100,22 @@ void init_thermometer(void) {
 int8_t measure_temp(void) {
     enable_adc();
 
-    // https://www.analog.com/media/en/technical-documentation/application-notes/an137f.pdf
-    diode_on_10uA();
-    float v10 = adc();
-    diode_on_200uA();
-    float v200 = adc();
-    diode_off();
+    thermistor_on();
+    uint16_t v_thermistor_adc = adc();
+    thermistor_off();
 
     disable_adc();
 
-    float temp = (v10 - v200) / (IDEALITY_FACTOR * BOLTZMANN_CONSTANT / ELEMENTARY_CHARGE * logf(CURRENT_RATIO)) - 273.15;
-    TRACE("THM: v10=%fmV v200=%fmV T=%fC\n", v10 * 1000, v200 * 1000, temp);
+    float r_thermistor = R1 / (1024.0 / v_thermistor_adc /* Vcc/Vthm */ - 1);
+    float temp  = 1.0 / (1.0 / (T0 + 273.15) + log(r_thermistor / R0) / BETA) - 273.15;
+    TRACE("THM: THM=%uLSB R=%dΩ T=%d℃\n", v_thermistor_adc, roundf(r_thermistor), roundf(temp));
 
     return (int8_t)roundf(temp);
 }
 
-float read_diode_voltage(void) {
+uint16_t read_thermistor_voltage(void) {
     enable_adc();
-    float ret = adc();
+    uint16_t ret = adc();
     disable_adc();
     return ret;
 }

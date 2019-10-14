@@ -49,18 +49,8 @@ void debug_ui(void) {
                 //trace off
                 trace = false;
                 break;
-            case 'n':
-                diode_on_10uA();
-                break;
-            case 'N':
-                diode_on_200uA();
-                break;
-            case 'f':
-                diode_off();
-                break;
             case 'v':
-                // read diode voltage
-                printf_P(PSTR("%fmV\n"), read_diode_voltage() * 1000);
+                printf_P(PSTR("%u LSB\n"), read_thermistor_voltage());
                 break;
             case 'r': {
                 bool trace_save = trace;
@@ -85,7 +75,6 @@ void debug_ui(void) {
     }
 
 cleanup:
-    diode_off();
     set_fan_duty(0);
 }
 
