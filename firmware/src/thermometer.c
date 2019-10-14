@@ -32,9 +32,11 @@
 #define DID_THM            ADC2D
 #define ADMUX_THM          0b0010 //ADC2
 #define BETA               3408   //thermistor beta
-#define R1                 3900
+#define R1                 3920
 #define T0                 25     //[C]
 #define R0                 9500   //thermistor resistance at T0[C]
+#define ADC_GAIN_COMP      1.0026672f // 4.88V = 1022.5LSB (Vcc=4.88V)
+#define ADC_OFFSET_ERROR   1.2239757f // 8.3mV = 1/2LSB (Vcc=4.93V)
 
 static void thermistor_on(void) {
     PORTB |= _BV(P_THMPWR);
@@ -54,7 +56,7 @@ static void disable_adc(void) {
     power_adc_disable();
 }
 
-static uint16_t adc() {
+static float adc() {
     const int N = 256;
     uint32_t sum = 0;
 
@@ -72,7 +74,7 @@ static uint16_t adc() {
 
     sleep_disable();
 
-    return (sum + N / 2) / N;
+    return ((float)sum / N - ADC_OFFSET_ERROR) * ADC_GAIN_COMP;
 }
 
 void init_thermometer(void) {
@@ -101,21 +103,21 @@ int8_t measure_temp(void) {
     enable_adc();
 
     thermistor_on();
-    uint16_t v_thermistor_adc = adc();
+    float v_thermistor_adc = adc();
     thermistor_off();
 
     disable_adc();
 
     float r_thermistor = R1 / (1024.0 / v_thermistor_adc /* Vcc/Vthm */ - 1);
     float temp  = 1.0 / (1.0 / (T0 + 273.15) + log(r_thermistor / R0) / BETA) - 273.15;
-    TRACE("THM: THM=%uLSB R=%dΩ T=%d℃\n", v_thermistor_adc, roundf(r_thermistor), roundf(temp));
+    TRACE("THM: THM=%uLSB R=%dΩ T=%d℃\n", (int)roundf(v_thermistor_adc), (int)roundf(r_thermistor), (int)roundf(temp));
 
     return (int8_t)roundf(temp);
 }
 
 uint16_t read_thermistor_voltage(void) {
     enable_adc();
-    uint16_t ret = adc();
+    uint16_t ret = roundf(adc());
     disable_adc();
     return ret;
 }
