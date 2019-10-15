@@ -55,11 +55,13 @@
 #include <avr/interrupt.h>
 #include "uart.h"
 
-#define BAUD_RATE               4800
+#define BAUD_RATE               9600
 #define P_TX_RX                 PB0
 #define PCINT_TX_RX             PCINT0
 #define SERIAL_BUFFER_SIZE      16
 #define ONEBIT_DELAY_COUNT      (F_CPU/BAUD_RATE)
+
+#ifdef DEBUG_TRACE
 
 static int uart_putchar(char c, FILE *stream);
 static int uart_getchar(FILE *stream);
@@ -174,19 +176,23 @@ static int uart_putchar(char c, FILE *stream) {
     return 0;
 }
 
+uint8_t available_input(void) {
+    return (SERIAL_BUFFER_SIZE + rxbuf_head - rxbuf_tail) % SERIAL_BUFFER_SIZE;
+}
+
+#endif //DEBUG_TRACE
+
 void init_uart(void) {
     //TX/RX is pulled-up input
     DDRB &= ~_BV(P_TX_RX);
     PORTB |= _BV(P_TX_RX);
 
+#ifdef DEBUG_TRACE
     //generate a pin change interrupt when TX/RX changes
     PCMSK |= _BV(PCINT_TX_RX);
     GIMSK |= _BV(PCIE);
 
     stdout = &uart_stdio;
     stdin = &uart_stdio;
-}
-
-uint8_t available_input(void) {
-    return (SERIAL_BUFFER_SIZE + rxbuf_head - rxbuf_tail) % SERIAL_BUFFER_SIZE;
+#endif //DEBUG_TRACE
 }

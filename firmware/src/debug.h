@@ -19,11 +19,12 @@
 #ifndef __DEBUG_H_
 #define __DEBUG_H_
 
+#ifdef DEBUG_TRACE
+#include <stdio.h>
 #include <avr/pgmspace.h>
-
-#define TRACE(format, ...) tracef_P(PSTR(format), __VA_ARGS__)
-
-void debug_ui(void);
-void tracef_P(const char *format /* PROGMEM */, ...);
+#define TRACE(format, ...) printf_P(PSTR(format), ##__VA_ARGS__)
+#else
+#define TRACE(format, ...)
+#endif
 
 #endif // __DEBUG_H_

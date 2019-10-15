@@ -40,8 +40,8 @@ void init_fan(void) {
     // reset output compare registers
     OCR1A = 0;
     OCR1B = 0;
-    // PWM freqency 250kHz(Timer 1 clock) / (9 + 1) = 25kHz, setFanDuty() configures the clock.
-    OCR1C = 9;
+    // PWM freqency 1MHz(Timer 1 clock) / (39 + 1) = 25kHz, setFanDuty() configures the clock.
+    OCR1C = 39;
     // disable all Timer1 interrupts
     TIMSK &= ~(_BV(OCIE1A) | _BV(OCIE1B) | _BV(TOIE1));
     // clear the Timer1 interrupt flags
@@ -61,7 +61,7 @@ void set_fan_duty(uint8_t duty) {
         TCNT1 = 0;
         // reset timer 1 prescaler
         GTCCR |= _BV(PSR1);
-        // connect PWM A to OC1A,  start timer 1, 250kHz clock
+        // connect PWM A to OC1A,  start timer 1, 1MHz clock
         TCCR1 |= _BV(COM1A1) | _BV(CS10);
     } else {
         // stop PWM

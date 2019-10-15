@@ -16,54 +16,89 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
+#include <math.h>
 #include <avr/io.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
 #include <avr/power.h>
 #include "fan.h"
 #include "thermometer.h"
-#include "timer.h"
-#include "fancontrol.h"
 #include "uart.h"
 #include "debug.h"
 
-#define TUNED_OSCCAL 0x99
+#define T_FAN_STOP 50
+#define T_FAN_START 55
+#define T_FAN_FULL_SPEED 70
+#define MIN_DUTY 12 //30%
+#define MAX_DUTY 39 //100%
 
 int main() {
-    // decrease clock speed
-    clock_prescale_set(clock_div_32); // 8MHz / 32 = 250kHz
-
-    // calibrate internal oscillator
-    OSCCAL = TUNED_OSCCAL;
-
     init_uart();
     init_fan();
     init_thermometer();
-    init_timer();
 
+    power_timer0_disable();
     power_usi_disable();
 
-    //pull-up unused pin
+    //pull-up unused pin to avoid high power consumptio
     DDRB &= ~(_BV(PB2));
     PORTB |= _BV(PB2);
 
+    //Wake AVR from sleep every 500ms
+    //Enable watchdog interrupt, typical timeout 0.5s
+    WDTCR = _BV(WDIE) | _BV(WDP2) | _BV(WDP0);
+
     sei();
 
+    uint8_t duty = 0;
+
     for (;;) {
-        if (is_timer_elapsed()) {
-            clear_elapsed_flag();
-            control_fan();
+        TRACE("FC: ");
+
+        int8_t temp = measure_temp();
+        uint8_t next_duty;
+
+        if (temp <= T_FAN_STOP) {
+            TRACE("T <= T_FAN_STOP");
+            next_duty = 0;
+        } else if (T_FAN_STOP < temp && temp < T_FAN_START) {
+            TRACE("T_FAN_STOP < T < T_FAN_START");
+            if (duty == 0) {
+                TRACE(", fan stopped");
+                next_duty = 0;
+            } else {
+                TRACE(", fan running");
+                next_duty = MIN_DUTY;
+            }
+        } else if (T_FAN_START <= temp && temp < T_FAN_FULL_SPEED) {
+            TRACE("T_FAN_START <= T < T_FAN_FULL_SPEED");
+            next_duty = (uint8_t)roundf((float)(MAX_DUTY - MIN_DUTY) /
+                                               (T_FAN_FULL_SPEED - T_FAN_START) *
+                                               (temp - T_FAN_START)) + MIN_DUTY;
+        } else { //temp >= T_FAN_FULL_SPEED
+            TRACE("T >= T_FAN_FULL_SPEED");
+            next_duty = MAX_DUTY;
         }
 
-        while (available_input() > 0) {
-            char ch = getchar();
-            if (ch == '\r' || ch == '\n') debug_ui();
-        }
 
-        set_sleep_mode(SLEEP_MODE_IDLE);
+        TRACE(", duty=%u", next_duty);
+
+        set_fan_duty(next_duty);
+        duty = next_duty;
+
+        //wait for next wdt interrupt
+        if (next_duty == 0) {
+            TRACE(", power down\n", next_duty);
+            set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+        } else {
+            TRACE(", idle\n", next_duty);
+            //Timer1 stops when in power-down mode
+            set_sleep_mode(SLEEP_MODE_IDLE);
+        }
         sleep_mode();
     }
 
     return 0;
 };
+
+EMPTY_INTERRUPT(WDT_vect);

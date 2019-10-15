@@ -37,6 +37,11 @@
 #define R0                 9500   //thermistor resistance at T0[C]
 #define ADC_GAIN_COMP      1.0026672f // 4.88V = 1022.5LSB (Vcc=4.88V)
 #define ADC_OFFSET_ERROR   1.2239757f // 8.3mV = 1/2LSB (Vcc=4.93V)
+#define ADC_PRESCALER      0b010
+
+#if F_CPU != 1000000L
+#error "update adc prescaler"
+#endif
 
 static void thermistor_on(void) {
     PORTB |= _BV(P_THMPWR);
@@ -87,8 +92,8 @@ void init_thermometer(void) {
 
     // Vref = Vcc, no left adjust result, input channel is THM
     ADMUX = ADMUX_THM << MUX0;
-    // ADC disabled, Auto Trigger disabled, ADC interrupt enabled, prescaler 1/2 (125kHz)
-    ADCSRA = _BV(ADIE);
+    // ADC disabled, Auto Trigger disabled, ADC interrupt enabled, prescaler 1/8 (125kHz)
+    ADCSRA = _BV(ADIE) | ADC_PRESCALER << ADPS0;
     // unipolar input mode, analog comparator multiplexer disabled, no input polarity reversal
     ADCSRB = 0;
     // disable digital input buffer of THM
@@ -110,16 +115,9 @@ int8_t measure_temp(void) {
 
     float r_thermistor = R1 / (1024.0 / v_thermistor_adc /* Vcc/Vthm */ - 1);
     float temp  = 1.0 / (1.0 / (T0 + 273.15) + log(r_thermistor / R0) / BETA) - 273.15;
-    TRACE("THM: THM=%uLSB R=%dΩ T=%d℃\n", (int)roundf(v_thermistor_adc), (int)roundf(r_thermistor), (int)roundf(temp));
+    TRACE("THM: THM=%fLSB R=%fΩ T=%f℃\n", v_thermistor_adc, r_thermistor, temp);
 
     return (int8_t)roundf(temp);
-}
-
-uint16_t read_thermistor_voltage(void) {
-    enable_adc();
-    uint16_t ret = roundf(adc());
-    disable_adc();
-    return ret;
 }
 
 EMPTY_INTERRUPT(ADC_vect);

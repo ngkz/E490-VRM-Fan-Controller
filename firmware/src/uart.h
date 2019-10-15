@@ -22,6 +22,8 @@
 #include <stdint.h>
 
 void init_uart(void);
+#ifdef DEBUG_TRACE
 uint8_t available_input(void);
+#endif
 
 #endif // __UART_H_

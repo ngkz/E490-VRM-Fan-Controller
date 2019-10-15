@@ -23,6 +23,5 @@
 
 void init_thermometer(void);
 int8_t measure_temp(void);
-uint16_t read_thermistor_voltage(void);
 
 #endif // __THERMOMETER_H_
