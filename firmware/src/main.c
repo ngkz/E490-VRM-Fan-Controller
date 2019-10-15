@@ -25,12 +25,7 @@
 #include "thermometer.h"
 #include "uart.h"
 #include "debug.h"
-
-#define T_FAN_STOP 50
-#define T_FAN_START 55
-#define T_FAN_FULL_SPEED 70
-#define MIN_DUTY 12 //30%
-#define MAX_DUTY 39 //100%
+#include "config.h"
 
 int main() {
     init_uart();

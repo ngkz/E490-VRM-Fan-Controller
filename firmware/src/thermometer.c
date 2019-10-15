@@ -23,6 +23,7 @@
 #include <avr/sleep.h>
 #include "thermometer.h"
 #include "debug.h"
+#include "config.h"
 
 #define BOLTZMANN_CONSTANT 1.379553e-23f
 #define ELEMENTARY_CHARGE  1.602177e-19f
@@ -31,12 +32,6 @@
 #define P_THM              PB4    //ADC2
 #define DID_THM            ADC2D
 #define ADMUX_THM          0b0010 //ADC2
-#define BETA               3408   //thermistor beta
-#define R1                 3920
-#define T0                 25     //[C]
-#define R0                 9500   //thermistor resistance at T0[C]
-#define ADC_GAIN_COMP      1.0026672f // 4.88V = 1022.5LSB (Vcc=4.88V)
-#define ADC_OFFSET_ERROR   1.2239757f // 8.3mV = 1/2LSB (Vcc=4.93V)
 #define ADC_PRESCALER      0b010
 
 #if F_CPU != 1000000L
