@@ -26,8 +26,8 @@ void init_fan(void) {
     DDRB |= _BV(P_PWM);   // PWM out
     PORTB &= ~_BV(P_PWM); // PWM low
 
-#if P_PWM != PB1
-#error "fix timer 1 configuration"
+#if P_PWM != PB1 || F_CPU != 1000000L
+#error "update timer 1 configuration"
 #endif
 
     // timer 1 configuration
