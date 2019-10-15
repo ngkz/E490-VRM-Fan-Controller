@@ -273,11 +273,11 @@ Wire Wire Line
 Wire Wire Line
 	5250 2200 5100 2200
 Wire Wire Line
-	5600 1200 5300 1200
+	5600 1200 5350 1200
 Wire Wire Line
-	5300 1200 5300 1900
+	5350 1200 5350 1900
 Wire Wire Line
-	5300 1900 5100 1900
+	5350 1900 5100 1900
 Wire Wire Line
 	5500 2550 5500 2600
 Connection ~ 5500 2550
@@ -337,4 +337,6 @@ Text Label 5100 2100 0    50   ~ 0
 THMPWR
 Text Notes 5100 2200 0    50   ~ 0
 THM
+Text Label 5100 1800 0    50   ~ 0
+TX_RX
 $EndSCHEMATC
