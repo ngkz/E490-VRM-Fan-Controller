@@ -28,7 +28,7 @@
 #define ADC_OFFSET_ERROR   1.2239757f // ADC offset error [LSB]
                                       // 8.3mV = 1/2LSB (Vcc=4.93V)
 
-#define T_FAN_STOP 50         //once the fan started, the fan won't stop until heatsink temperature drops below or equal to this.
+#define T_FAN_STOP 50         //once the fan started, the fan won't stop until heatsink temperature drops below this.
 #define T_FAN_START 55        //if heatsink temperature is greater than or equal to this, the fan starts up.
                               //the fan accelarates as temperature rises.
 #define T_FAN_FULL_SPEED 70   //if heatsink temperature is greater than or equal to this, the fan will run at full speed (MAX_DUTY).

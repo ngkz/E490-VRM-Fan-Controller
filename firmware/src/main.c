@@ -56,8 +56,8 @@ int main() {
         if (temp <= T_FAN_STOP) {
             TRACE("T <= T_FAN_STOP");
             next_duty = 0;
-        } else if (T_FAN_STOP < temp && temp < T_FAN_START) {
-            TRACE("T_FAN_STOP < T < T_FAN_START");
+        } else if (T_FAN_STOP <= temp && temp < T_FAN_START) {
+            TRACE("T_FAN_STOP <= T < T_FAN_START");
             if (duty == 0) {
                 TRACE(", fan stopped");
                 next_duty = 0;
