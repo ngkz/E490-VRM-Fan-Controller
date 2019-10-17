@@ -48,10 +48,10 @@ int main() {
     uint8_t duty = 0;
 
     for (;;) {
-        TRACE("FC: ");
-
         int8_t temp = measure_temp();
         uint8_t next_duty;
+
+        TRACE("FC: ");
 
         if (temp <= T_FAN_STOP) {
             TRACE("T <= T_FAN_STOP");
