@@ -1,6 +1,6 @@
 EESchema Schematic File Version 4
 LIBS:vrmfanctl_pcb-cache
-EELAYER 30 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -303,7 +303,7 @@ L Device:R R1
 U 1 1 5DA57D3A
 P 5500 2300
 F 0 "R1" H 5570 2346 50  0000 L CNN
-F 1 "3.9k" H 5570 2255 50  0000 L CNN
+F 1 "4.7k" H 5570 2255 50  0000 L CNN
 F 2 "Resistor_THT:R_Axial_DIN0204_L3.6mm_D1.6mm_P5.08mm_Horizontal" V 5430 2300 50  0001 C CNN
 F 3 "~" H 5500 2300 50  0001 C CNN
 	1    5500 2300

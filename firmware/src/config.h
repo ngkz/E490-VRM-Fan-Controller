@@ -19,10 +19,10 @@
 #ifndef __CONFIG_H_
 #define __CONFIG_H_
 
-#define BETA               3408       //thermistor B-Constant or Beta value
-#define T0                 25         //[℃]
-#define R0                 9500       //thermistor resistance at T0[℃]
-#define R1                 3920       //actual R1 resistance [Ω]
+#define BETA               3346       //thermistor B-Constant or Beta value
+#define T0                 22.5       //[℃]
+#define R0                 10400      //thermistor resistance at T0[℃]
+#define R1                 4620       //actual R1 resistance [Ω]
 #define ADC_GAIN_COMP      1.0026672f // ADC gain error compensation
                                       // 4.88V = 1022.5LSB (Vcc=4.88V)
 #define ADC_OFFSET_ERROR   1.2239757f // ADC offset error [LSB]
