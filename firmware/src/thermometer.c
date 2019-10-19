@@ -99,20 +99,17 @@ void init_thermometer(void) {
     power_adc_disable();
 }
 
-int8_t measure_temp(void) {
+float measure_temp(void) {
     enable_adc();
-
     thermistor_on();
     float v_thermistor_adc = adc();
     thermistor_off();
-
     disable_adc();
 
     float r_thermistor = R1 / (1024.0 / v_thermistor_adc /* Vcc/Vthm */ - 1);
     float temp  = 1.0 / (1.0 / (T0 + 273.15) + log(r_thermistor / R0) / BETA) - 273.15;
-    TRACE("THM: THM=%fLSB R=%fΩ T=%f℃\n", v_thermistor_adc, r_thermistor, temp);
-
-    return (int8_t)roundf(temp);
+    TRACE("THM: THM=%fLSB R=%.0fΩ T=%f℃\n", v_thermistor_adc, r_thermistor, temp);
+    return temp;
 }
 
 EMPTY_INTERRUPT(ADC_vect);

@@ -22,6 +22,6 @@
 #include <stdint.h>
 
 void init_thermometer(void);
-int8_t measure_temp(void);
+float measure_temp(void);
 
 #endif // __THERMOMETER_H_

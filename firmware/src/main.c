@@ -48,7 +48,7 @@ int main() {
     uint8_t duty = 0;
 
     for (;;) {
-        int8_t temp = measure_temp();
+        float temp = measure_temp();
         uint8_t next_duty;
 
         TRACE("FC: ");
