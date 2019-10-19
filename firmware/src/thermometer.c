@@ -102,7 +102,7 @@ void init_thermometer(void) {
 float measure_temp(void) {
     enable_adc();
     thermistor_on();
-    float v_thermistor_adc = adc();
+    float v_thermistor_adc = fmaxf(adc(), 1 /* thermistor not connected */);
     thermistor_off();
     disable_adc();
 
