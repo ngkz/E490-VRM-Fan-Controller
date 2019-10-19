@@ -74,7 +74,7 @@ static float adc() {
 
     sleep_disable();
 
-    return ((float)sum / N - ADC_OFFSET_ERROR) * ADC_GAIN_COMP;
+    return fmaxf(fminf(((float)sum / N - ADC_OFFSET_ERROR) * ADC_GAIN_COMP, 1023), 0);
 }
 
 void init_thermometer(void) {
