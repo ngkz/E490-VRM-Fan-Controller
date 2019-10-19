@@ -57,7 +57,7 @@ static void disable_adc(void) {
 }
 
 static float adc() {
-    const int N = 256;
+    const int N = 128;
     uint32_t sum = 0;
 
     set_sleep_mode(SLEEP_MODE_ADC);
